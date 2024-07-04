@@ -1,4 +1,4 @@
-package pl.lemanski.pandamidi
+package pl.lemanski.pandamidi.core
 
 data class Interval(private val semitones: Int) {
 
@@ -7,7 +7,7 @@ data class Interval(private val semitones: Int) {
         require(newValue in 0..127) {
             "Resulting note is out of range"
         }
-        return Note(newValue.toByte())
+        return Note(newValue)
     }
 
     companion object {

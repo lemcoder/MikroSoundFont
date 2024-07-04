@@ -1,0 +1,22 @@
+package pl.lemanski.pandamidi.sequencer
+
+enum class MidiEventType(val code: Int) {
+    MIDI_TIME_CODE(241),
+    SONG_POSITION_POINTER(242),
+    SONG_SELECT(243),
+    TUNE_REQUEST(246),
+    END_OF_EXCLUSIVE(247),
+    TIMING_CLOCK(248),
+    START(250),
+    CONTINUE(251),
+    STOP(252),
+    ACTIVE_SENSING(254),
+    SYSTEM_RESET(255),
+    NOTE_OFF(128),
+    NOTE_ON(144),
+    POLY_PRESSURE(160),
+    CONTROL_CHANGE(176),
+    PROGRAM_CHANGE(192),
+    CHANNEL_PRESSURE(208),
+    PITCH_BEND(224),
+}

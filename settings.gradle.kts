@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PandaMidi"
 include(":core")
+include(":jvmApp")

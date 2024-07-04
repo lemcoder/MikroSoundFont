@@ -1,4 +1,8 @@
-package pl.lemanski.pandamidi
+package pl.lemanski.pandamidi.core
+
+import java.lang.IllegalArgumentException
+import kotlin.collections.distinct
+import kotlin.collections.sorted
 
 class ChordBuilder(private val root: Note) {
     private val notes = mutableListOf<Note>()

@@ -1,4 +1,4 @@
-package pl.lemanski.pandamidi
+package pl.lemanski.pandamidi.core
 
 // Triads
 

@@ -1,4 +1,4 @@
-package pl.lemanski.pandamidi
+package pl.lemanski.pandamidi.core
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

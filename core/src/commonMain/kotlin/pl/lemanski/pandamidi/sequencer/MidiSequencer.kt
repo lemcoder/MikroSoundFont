@@ -1,6 +1,7 @@
 package pl.lemanski.pandamidi.sequencer
 
 import pl.lemanski.pandamidi.core.TimeSignature
+import java.io.File
 import javax.sound.midi.MidiEvent
 import javax.sound.midi.MidiSystem
 import javax.sound.midi.Sequence
@@ -40,7 +41,7 @@ class MidiSequencer {
 
     fun play() {
         sequencer.open()
-        sequencer.setSequence(sequence)
+        sequencer.sequence = sequence
         sequencer.start()
 
         while (sequencer.isRunning) {
@@ -48,5 +49,6 @@ class MidiSequencer {
         }
 
         sequencer.close()
+        MidiSystem.write(sequence, 1, File("C:/Users/lenovo/Desktop/example.mid"))
     }
 }

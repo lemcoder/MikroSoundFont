@@ -1,3 +1,3 @@
 package pl.lemanski.pandamidi.sequencer
 
-expect fun strLen(s: String): Long
+expect fun loadSoundFont(path: String)

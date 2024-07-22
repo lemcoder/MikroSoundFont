@@ -1,8 +1,5 @@
 package pl.lemanski.pandamidi.core
 
-import java.lang.IllegalStateException
-import kotlin.ranges.contains
-
 //+------+----+----+----+----+----+----+----+----+----+----+----+
 //| Note | -1 |  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 |
 //+------+----+----+----+----+----+----+----+----+----+----+----+
@@ -24,7 +21,6 @@ import kotlin.ranges.contains
  * This class represents a MIDI note.
  */
 
-@JvmInline
 value class Note(val value: Int) : Comparable<Note> {
     init {
         require(value in 0..127) {

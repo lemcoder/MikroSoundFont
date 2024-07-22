@@ -10,11 +10,13 @@ java {
 kotlin {
     mingwX64().apply {
         val main by compilations.getting
-        main.cinterops.create("fluidsynth") {
-            packageName = "pl.lemanski.pandamidi"
-            extraOpts("-staticLibrary", "libfluidsynth.a")
+
+        main.cinterops.create("tsf") {
+            packageName = "org.tsf"
+            extraOpts("-header", "$rootDir\\native\\include\\tsf.h")
+            extraOpts("-header", "$rootDir\\native\\include\\wrapper.h")
             extraOpts("-libraryPath", "$rootDir\\native\\lib")
-            extraOpts("-header", "$rootDir\\native\\include\\fluidsynth.h")
+            extraOpts("-staticLibrary", "libtsf.a")
         }
     }
 

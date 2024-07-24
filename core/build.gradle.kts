@@ -13,7 +13,6 @@ kotlin {
 
         main.cinterops.create("tsf") {
             packageName = "org.tsf"
-            extraOpts("-header", "$rootDir\\native\\include\\tsf.h")
             extraOpts("-header", "$rootDir\\native\\include\\wrapper.h")
             extraOpts("-libraryPath", "$rootDir\\native\\lib")
             extraOpts("-staticLibrary", "libtsf.a")

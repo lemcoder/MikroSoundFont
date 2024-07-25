@@ -1,9 +1,10 @@
 package pl.lemanski.pandamidi.core
 
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
 class ChordBuilderTest {
+
     @Test
     fun shouldCreateCorrectNotesForMinorTriad() {
         val expectedCMinorTriadNotes = listOf(Note(24), Note(27), Note(31)) // C E G

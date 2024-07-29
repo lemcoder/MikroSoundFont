@@ -2,20 +2,15 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_22
-    targetCompatibility = JavaVersion.VERSION_22
-}
-
 kotlin {
     mingwX64().apply {
         val main by compilations.getting
 
-        main.cinterops.create("tsf") {
-            packageName = "org.tsf"
-            extraOpts("-header", "$rootDir\\native\\include\\wrapper.h")
+        main.cinterops.create("mwc") {
+            packageName = "pl.lemanski.mwc"
+            extraOpts("-header", "$rootDir\\native\\include\\midi_wav_converter.h")
             extraOpts("-libraryPath", "$rootDir\\native\\lib")
-            extraOpts("-staticLibrary", "libtsf.a")
+            extraOpts("-staticLibrary", "libmwc.a")
         }
     }
 

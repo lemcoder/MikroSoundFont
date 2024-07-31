@@ -1,1 +1,0 @@
-void generate(const char* soundFontPath, const char* midiFilePath, const char* outputWavPath);

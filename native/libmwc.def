@@ -1,0 +1,4 @@
+package = libmwc
+headerFilter = "mwc/*"
+headers = mwc/midi_wav_converter.h
+staticLibraries.mingw_x64 = libmwc.a

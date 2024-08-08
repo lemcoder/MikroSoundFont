@@ -12,7 +12,8 @@ kotlin {
     sourceSets {
         mingwMain.dependencies {
             implementation(libs.kotlinx.io)
-            implementation(libs.pandamidi.core)
+//            implementation(libs.pandamidi.core)
+            implementation(projects.core)
         }
     }
 }

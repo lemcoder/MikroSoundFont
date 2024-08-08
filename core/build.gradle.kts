@@ -16,8 +16,8 @@ kotlin {
             }
         }
 
-        main.cinterops.create("libmwc") {
-            definitionFile = File(rootDir, "native/libmwc.def")
+        main.cinterops.create("libtsf") {
+            definitionFile = File(rootDir, "native/libtsf.def")
             includeDirs.headerFilterOnly("$rootDir\\native\\include")
             extraOpts("-libraryPath", "$rootDir\\native\\lib")
         }

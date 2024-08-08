@@ -36,7 +36,6 @@ fun main() {
         next = g
     )
 
-
     val e = MidiMessageNoteOn(
         time = 1_000u,
         channel = 7u,

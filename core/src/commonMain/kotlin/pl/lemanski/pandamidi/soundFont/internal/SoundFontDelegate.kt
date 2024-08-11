@@ -1,11 +1,10 @@
 package pl.lemanski.pandamidi.soundFont.internal
 
-import pl.lemanski.pandamidi.soundFont.Sf
 import pl.lemanski.pandamidi.soundFont.SoundFont
 
-internal open class SoundFontDelegate(val sf: Sf) : SoundFont {
+internal open class SoundFontDelegate : SoundFont {
 
-    override fun copy(): SoundFont = SoundFontDelegate(sf)
+    override fun copy(): SoundFont = SoundFontDelegate() // TODO implement
 
     override fun close() = close(this)
 
@@ -36,4 +35,8 @@ internal open class SoundFontDelegate(val sf: Sf) : SoundFont {
     override fun noteOffAll() = noteOffAll(this)
 
     override fun activeVoiceCount(): Int = activeVoiceCount(this)
+
+    override fun setBankPreset(channel: Int, bank: Int, presetNumber: Int) = setBankPresetNumber(this, channel, bank, presetNumber)
+
+    override fun renderFloat(samples: Int, isMixing: Boolean): FloatArray = renderFloat(this, samples, isMixing)
 }

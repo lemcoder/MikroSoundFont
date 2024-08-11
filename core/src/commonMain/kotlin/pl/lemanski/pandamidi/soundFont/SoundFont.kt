@@ -109,6 +109,16 @@ interface SoundFont {
     fun activeVoiceCount(): Int
 
     /**
+     * Set up channel parameters
+     */
+    fun setBankPreset(channel: Int, bank: Int, presetNumber: Int)
+
+    /**
+     * Render output samples
+     */
+    fun renderFloat(samples: Int, isMixing: Boolean): FloatArray
+
+    /**
      * Supported output modes by the render methods
      */
     enum class OutputMode {

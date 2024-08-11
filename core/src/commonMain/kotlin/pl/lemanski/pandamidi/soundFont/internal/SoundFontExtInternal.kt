@@ -31,3 +31,7 @@ internal expect fun bankNoteOff(delegate: SoundFontDelegate, bank: Int, presetNu
 internal expect fun noteOffAll(delegate: SoundFontDelegate)
 
 internal expect fun activeVoiceCount(delegate: SoundFontDelegate): Int
+
+internal expect fun setBankPresetNumber(delegate: SoundFontDelegate, channel: Int, bank: Int, presetNumber: Int)
+
+internal expect fun renderFloat(delegate: SoundFontDelegate, samples: Int, isMixing: Boolean): FloatArray

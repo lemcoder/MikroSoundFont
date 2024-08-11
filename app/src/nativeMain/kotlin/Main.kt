@@ -15,47 +15,47 @@ import platform.posix.sleep
 @OptIn(ExperimentalForeignApi::class)
 fun main() {
     val gOff = MidiMessageNoteOff(
-        time = 10000u,
-        channel = 5u,
-        key = 32u,
+        time = 10000,
+        channel = 5,
+        key = 32,
         next = null
     )
 
     val g = MidiMessageNoteOn(
-        time = 2500u,
-        channel = 5u,
-        key = 43u,
-        velocity = 80u,
+        time = 2500,
+        channel = 5,
+        key = 43,
+        velocity = 80,
         next = gOff
     )
 
     val eOff = MidiMessageNoteOff(
-        time = 2000u,
-        channel = 7u,
-        key = 40u,
+        time = 2000,
+        channel = 7,
+        key = 40,
         next = g
     )
 
     val e = MidiMessageNoteOn(
-        time = 1_000u,
-        channel = 7u,
-        key = 40u,
-        velocity = 80u,
+        time = 1_000,
+        channel = 7,
+        key = 40,
+        velocity = 80,
         next = eOff
     )
 
     val cOff = MidiMessageNoteOff(
-        time = 100u,
-        channel = 1u,
-        key = 36u,
+        time = 100,
+        channel = 1,
+        key = 36,
         next = e
     )
 
     val c = MidiMessageNoteOn(
-        time = 0u,
-        channel = 1u,
-        key = 36u,
-        velocity = 80u,
+        time = 0,
+        channel = 1,
+        key = 36,
+        velocity = 80,
         next = cOff
     )
 
@@ -64,8 +64,11 @@ fun main() {
 
     val soundFontPath = Path("D:\\src\\MidiWavConverter\\Example\\florestan-subset.sf2")
 
+    println("1")
     generator.setSoundFont(soundFontPath.toString())
+    println("2")
     val midiBytes = generator.generate(c)
+    println("3")
     val numSamples = midiBytes.size.toUInt() / sizeOf<FloatVar>().toUInt()
     val wavFileHeader = WavFileHeader.write(44100u, numSamples, 2u)
 

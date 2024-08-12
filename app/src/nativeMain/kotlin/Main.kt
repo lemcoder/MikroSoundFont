@@ -16,14 +16,14 @@ import platform.posix.sleep
 fun main() {
     val gOff = MidiMessageNoteOff(
         time = 10000,
-        channel = 5,
+        channel = 6,
         key = 32,
         next = null
     )
 
     val g = MidiMessageNoteOn(
         time = 2500,
-        channel = 5,
+        channel = 6,
         key = 43,
         velocity = 80,
         next = gOff
@@ -31,14 +31,14 @@ fun main() {
 
     val eOff = MidiMessageNoteOff(
         time = 2000,
-        channel = 7,
+        channel = 3,
         key = 40,
         next = g
     )
 
     val e = MidiMessageNoteOn(
         time = 1_000,
-        channel = 7,
+        channel = 3,
         key = 40,
         velocity = 80,
         next = eOff
@@ -46,14 +46,14 @@ fun main() {
 
     val cOff = MidiMessageNoteOff(
         time = 100,
-        channel = 1,
+        channel = 0,
         key = 36,
         next = e
     )
 
     val c = MidiMessageNoteOn(
         time = 0,
-        channel = 1,
+        channel = 0,
         key = 36,
         velocity = 80,
         next = cOff
@@ -64,11 +64,8 @@ fun main() {
 
     val soundFontPath = Path("D:\\src\\MidiWavConverter\\Example\\florestan-subset.sf2")
 
-    println("1")
     generator.setSoundFont(soundFontPath.toString())
-    println("2")
     val midiBytes = generator.generate(c)
-    println("3")
     val numSamples = midiBytes.size.toUInt() / sizeOf<FloatVar>().toUInt()
     val wavFileHeader = WavFileHeader.write(44100u, numSamples, 2u)
 

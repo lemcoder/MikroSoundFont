@@ -1,18 +1,7 @@
 package pl.lemanski.pandamidi.soundFont
 
 interface SoundFont {
-    /**
-     * Copy a tsf instance from an existing one, use tsf_close to close it as well.
-     * All copied tsf instances and their original instance are linked, and share the underlying soundfont.
-     * This allows loading a soundfont only once, but using it for multiple independent playbacks.
-     * (This function isn't thread-safe without locking.)
-     */
-    fun copy(): SoundFont
-
-    /**
-     * Free the memory related to this tsf instance
-     */
-    fun close()
+    val channels: List<Channel>
 
     /**
      * Stop all playing notes immediately and reset all channel parameters
@@ -114,7 +103,8 @@ interface SoundFont {
     fun setBankPreset(channel: Int, bank: Int, presetNumber: Int)
 
     /**
-     * Render output samples
+     * Render output samples in F32 format
+     * @param isMixing: if false clear the buffer first, otherwise mix into existing data
      */
     fun renderFloat(samples: Int, isMixing: Boolean): FloatArray
 

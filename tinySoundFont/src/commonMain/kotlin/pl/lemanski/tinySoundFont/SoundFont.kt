@@ -1,4 +1,4 @@
-package pl.lemanski.pandamidi.soundFont
+package pl.lemanski.tinySoundFont
 
 interface SoundFont {
     val channels: List<Channel>

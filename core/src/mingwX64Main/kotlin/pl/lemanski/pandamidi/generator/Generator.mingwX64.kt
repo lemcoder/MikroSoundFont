@@ -1,7 +1,7 @@
 package pl.lemanski.pandamidi.generator
 
-import pl.lemanski.pandamidi.soundFont.SoundFont
-import pl.lemanski.pandamidi.soundFont.soundFont
+import pl.lemanski.tinySoundFont.SoundFont
+import pl.lemanski.tinySoundFont.soundFont
 
 internal object MinGWGenerator : Generator {
     private const val SAMPLE_RATE = 44100

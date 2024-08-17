@@ -1,13 +1,11 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import pl.lemanski.kotlin.compile.GreetingPluginExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     id("maven-publish")
-    id("pl.lemanski.kotlin.compile")
 }
 
-group = "pl.lemanski.pandamidi"
+group = "pl.lemanski.tinySoundFont"
 version = "0.0.1"
 
 kotlin {
@@ -36,7 +34,6 @@ kotlin {
 
         commonMain.dependencies {
             implementation(libs.coroutines.core)
-            implementation(projects.tinySoundFont)
         }
 
         commonTest.dependencies {
@@ -49,8 +46,4 @@ publishing {
     repositories {
         mavenLocal()
     }
-}
-
-configure<GreetingPluginExtension> {
-    message = "Hello from GreetingPlugin!"
 }

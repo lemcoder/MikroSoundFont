@@ -1,4 +1,4 @@
-package pl.lemanski.pandamidi.soundFont
+package pl.lemanski.tinySoundFont
 
 /**
  * This class represents a channel on a soundfont.

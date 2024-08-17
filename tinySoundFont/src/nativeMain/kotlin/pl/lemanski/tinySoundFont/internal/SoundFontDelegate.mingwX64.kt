@@ -1,4 +1,4 @@
-package pl.lemanski.pandamidi.soundFont.internal
+package pl.lemanski.tinySoundFont.internal
 
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -6,8 +6,8 @@ import kotlinx.cinterop.refTo
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKString
-import pl.lemanski.pandamidi.soundFont.Channel
-import pl.lemanski.pandamidi.soundFont.SoundFont
+import pl.lemanski.tinySoundFont.Channel
+import pl.lemanski.tinySoundFont.SoundFont
 import tinySoundFont.TSFOutputMode
 import tinySoundFont.tsf_active_voice_count
 import tinySoundFont.tsf_bank_get_presetname

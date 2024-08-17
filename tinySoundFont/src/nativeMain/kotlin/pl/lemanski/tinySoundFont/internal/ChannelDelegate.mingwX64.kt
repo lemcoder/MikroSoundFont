@@ -1,9 +1,9 @@
-package pl.lemanski.pandamidi.soundFont.internal
+package pl.lemanski.tinySoundFont.internal
 
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.reinterpret
-import pl.lemanski.pandamidi.soundFont.Channel
+import pl.lemanski.tinySoundFont.Channel
 import tinySoundFont.tsf_channel_get_pan
 import tinySoundFont.tsf_channel_get_pitchrange
 import tinySoundFont.tsf_channel_get_pitchwheel

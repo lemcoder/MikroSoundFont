@@ -22,9 +22,6 @@ abstract class KonanPlugin : Plugin<Project> {
                 project.layout.projectDirectory
                     .dir(extension.sourceDir.get())
                     .asFileTree
-//                    .matching {
-//                        // TODO
-//                    }
             )
 
              includeDirs.from(project.layout.projectDirectory.dir(extension.headerDir))

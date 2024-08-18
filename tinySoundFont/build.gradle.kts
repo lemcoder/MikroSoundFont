@@ -16,16 +16,20 @@ kotlin {
     mingwX64().apply {
         val main by compilations.getting
 
-        main.compileTaskProvider.configure {
-            compilerOptions {
-                freeCompilerArgs.add("-Xbinary=gc=noop")
-            }
+        main.cinterops.create("libtsf") {
+            definitionFile = File(rootDir, "native/libtsf.def")
+            includeDirs.headerFilterOnly("$rootDir\\native\\include")
+            extraOpts("-libraryPath", "$rootDir\\native\\lib\\mingw_x64")
         }
+    }
+
+    linuxX64().apply {
+        val main by compilations.getting
 
         main.cinterops.create("libtsf") {
             definitionFile = File(rootDir, "native/libtsf.def")
             includeDirs.headerFilterOnly("$rootDir\\native\\include")
-            extraOpts("-libraryPath", "$rootDir\\native\\lib")
+            extraOpts("-libraryPath", "$rootDir\\native\\lib\\linux_x64")
         }
     }
 

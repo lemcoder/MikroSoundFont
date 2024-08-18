@@ -42,7 +42,10 @@ abstract class KonanPlugin : Plugin<Project> {
 
             libName.set(extension.libName)
             objectFiles.from(konanClangCompile)
-            runKonan.set(File(extension.konanPath.get()).resolve("bin/run_konan.bat"))
+            // check if we are on windows
+            val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+            val scriptPath = if (isWindows) "bin/run_konan.bat" else "bin/run_konan"
+            runKonan.set(File(extension.konanPath.get()).resolve(scriptPath))
         }
     }
 }

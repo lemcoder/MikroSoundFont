@@ -57,7 +57,7 @@ publishing {
 }
 
 configure<KonanPluginExtension> {
-    kotlinTarget = KonanTarget.MINGW_X64
+    kotlinTarget = KonanTarget.LINUX_X64
     sourceDir = "${rootDir}/native/src"
     headerDir = "${rootDir}/native/include"
     libName = "tsf"

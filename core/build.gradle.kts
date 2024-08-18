@@ -6,6 +6,7 @@ plugins {
 
 kotlin {
     mingwX64()
+    linuxX64()
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {

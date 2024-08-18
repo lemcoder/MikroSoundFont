@@ -3,14 +3,14 @@ plugins {
 }
 
 kotlin {
-    mingwX64().apply {
+    linuxX64().apply {
         binaries.executable {
             entryPoint = "main"
         }
     }
 
     sourceSets {
-        mingwMain.dependencies {
+        nativeMain.dependencies {
             implementation(libs.kotlinx.io)
 //            implementation(libs.pandamidi.core)
             implementation(projects.core)

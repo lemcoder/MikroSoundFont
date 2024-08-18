@@ -3,10 +3,8 @@ package pl.lemanski.pandamidi.io.wav
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ByteVarOf
 import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.CVariable
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.UIntVar
-import kotlinx.cinterop.UIntVarOf
 import kotlinx.cinterop.UShortVar
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.cstr

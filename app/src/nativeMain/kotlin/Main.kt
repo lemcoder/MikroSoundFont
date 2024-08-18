@@ -13,7 +13,7 @@ import pl.lemanski.pandamidi.io.wav.toByteArray
 import platform.posix.sleep
 
 @OptIn(ExperimentalForeignApi::class)
-fun main() {
+fun main(args: Array<String>) {
     val gOff = MidiMessageNoteOff(
         time = 10000,
         channel = 6,
@@ -62,7 +62,7 @@ fun main() {
     var bytes = ByteArray(0)
     val generator = getGenerator()
 
-    val soundFontPath = Path("D:\\src\\MidiWavConverter\\Example\\florestan-subset.sf2")
+    val soundFontPath = Path(args[0])
 
     generator.setSoundFont(soundFontPath.toString())
     val midiBytes = generator.generate(c)

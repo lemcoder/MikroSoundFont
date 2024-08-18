@@ -1,10 +1,8 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import pl.lemanski.kotlin.compile.GreetingPluginExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     id("maven-publish")
-    id("pl.lemanski.kotlin.compile")
 }
 
 group = "pl.lemanski.pandamidi"
@@ -49,8 +47,4 @@ publishing {
     repositories {
         mavenLocal()
     }
-}
-
-configure<GreetingPluginExtension> {
-    message = "Hello from GreetingPlugin!"
 }

@@ -13,23 +13,18 @@ group = "pl.lemanski.tinySoundFont"
 version = "0.0.1"
 
 kotlin {
-    mingwX64().apply {
-        val main by compilations.getting
+    listOf(
+        mingwX64(),
+        linuxX64()
+    ).forEach { target ->
+        target.apply {
+            val main by compilations.getting
 
-        main.cinterops.create("libtsf") {
-            definitionFile = File(rootDir, "native/libtsf.def")
-            includeDirs.headerFilterOnly("$rootDir\\native\\include")
-            extraOpts("-libraryPath", "$rootDir\\native\\lib\\mingw_x64")
-        }
-    }
-
-    linuxX64().apply {
-        val main by compilations.getting
-
-        main.cinterops.create("libtsf") {
-            definitionFile = File(rootDir, "native/libtsf.def")
-            includeDirs.headerFilterOnly("$rootDir\\native\\include")
-            extraOpts("-libraryPath", "$rootDir\\native\\lib\\linux_x64")
+            main.cinterops.create("libtsf") {
+                definitionFile = File(rootDir, "native/libtsf.def")
+                includeDirs.headerFilterOnly("$rootDir\\native\\include")
+                extraOpts("-libraryPath", "$rootDir\\native\\lib\\${target.name}")
+            }
         }
     }
 
@@ -39,7 +34,6 @@ kotlin {
     }
 
     sourceSets {
-
         commonMain.dependencies {
             implementation(libs.coroutines.core)
         }

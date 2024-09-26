@@ -18,6 +18,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.coroutines.core)
             implementation(projects.tinySoundFont)
+            implementation(libs.mikroaudio)
         }
 
         commonTest.dependencies {

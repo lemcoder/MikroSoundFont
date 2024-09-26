@@ -1,12 +1,12 @@
 package pl.lemanski.tinySoundFont
 
-import pl.lemanski.tinySoundFont.internal.SoundFontDelegate
+import pl.lemanski.tinySoundFont.internal.getSoundFontDelegate
 
 actual fun soundFont(path: String): SoundFont {
-    return SoundFontDelegate(path)
+    return getSoundFontDelegate(path)
 
 }
 
 actual fun soundFont(memory: ByteArray): SoundFont {
-    return SoundFontDelegate(memory)
+    return getSoundFontDelegate(memory)
 }

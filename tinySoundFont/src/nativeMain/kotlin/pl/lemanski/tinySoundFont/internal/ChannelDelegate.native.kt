@@ -4,6 +4,7 @@ import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.reinterpret
 import pl.lemanski.tinySoundFont.Channel
+import pl.lemanski.tinySoundFont.SoundFont
 import tinySoundFont.tsf_channel_get_pan
 import tinySoundFont.tsf_channel_get_pitchrange
 import tinySoundFont.tsf_channel_get_pitchwheel
@@ -26,10 +27,15 @@ import tinySoundFont.tsf_channel_set_tuning
 import tinySoundFont.tsf_channel_set_volume
 import tinySoundFont.tsf_channel_sounds_off_all
 
+internal actual fun getChannelDelegate(
+    number: Int,
+    soundFont: SoundFont
+): Channel = ChannelDelegate(number, soundFont)
+
 @OptIn(ExperimentalForeignApi::class)
-internal actual class ChannelDelegate(
+internal class ChannelDelegate(
     override val number: Int,
-    private val soundFontDelegate: SoundFontDelegate
+    private val soundFont: SoundFont
 ) : Channel {
 
     override fun setPresetIndex(presetIndex: Int) {
@@ -40,7 +46,12 @@ internal actual class ChannelDelegate(
 
     override fun setPresetNumber(presetNumber: Int, isMidiDrums: Boolean) {
         withSoundFont {
-            tsf_channel_set_presetnumber(it.reinterpret(), number, presetNumber, if (isMidiDrums) 1 else 0)
+            tsf_channel_set_presetnumber(
+                it.reinterpret(),
+                number,
+                presetNumber,
+                if (isMidiDrums) 1 else 0
+            )
         }
     }
 
@@ -158,5 +169,8 @@ internal actual class ChannelDelegate(
         }
     }
 
-    private fun <T> withSoundFont(block: (soundFont: CPointer<*>) -> T): T = soundFontDelegate.soundFont.let(block) ?: throw IllegalStateException("SoundFont not loaded")
+    // FIXME
+    private fun <T> withSoundFont(block: (soundFont: CPointer<*>) -> T): T =
+        (soundFont as? SoundFontDelegate)?.soundFont?.let(block)
+            ?: throw IllegalStateException("SoundFont not loaded")
 }

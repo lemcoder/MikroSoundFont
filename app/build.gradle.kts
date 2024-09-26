@@ -3,7 +3,7 @@ plugins {
 }
 
 kotlin {
-    linuxX64().apply {
+    mingwX64().apply {
         binaries.executable {
             entryPoint = "main"
         }

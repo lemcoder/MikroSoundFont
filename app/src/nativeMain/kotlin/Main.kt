@@ -1,15 +1,18 @@
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.sizeOf
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.io.Buffer
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import pl.lemanski.pandamidi.generator.MidiMessageNoteOff
 import pl.lemanski.pandamidi.generator.MidiMessageNoteOn
 import pl.lemanski.pandamidi.generator.getGenerator
+import pl.lemanski.pandamidi.io.audio.playFromBuffer
 import pl.lemanski.pandamidi.io.toByteArrayLittleEndian
 import pl.lemanski.pandamidi.io.wav.WavFileHeader
-import pl.lemanski.pandamidi.io.wav.toByteArray
 import platform.posix.sleep
 
 @OptIn(ExperimentalForeignApi::class)
@@ -62,23 +65,35 @@ fun main(args: Array<String>) {
     var bytes = ByteArray(0)
     val generator = getGenerator()
 
-    val soundFontPath = Path(args[0])
+//    val soundFontPath = Path(args[0])
+    val soundFontPath = Path("C:\\Users\\Mikolaj\\Desktop\\test\\florestan-subset.sf2")
 
     generator.setSoundFont(soundFontPath.toString())
     val midiBytes = generator.generate(c)
     val numSamples = midiBytes.size.toUInt() / sizeOf<FloatVar>().toUInt()
     val wavFileHeader = WavFileHeader.write(44100u, numSamples, 2u)
 
-    bytes += wavFileHeader.toByteArray()
+    // bytes += wavFileHeader.toByteArray()
     bytes += midiBytes.toByteArrayLittleEndian()
+
 
     println(bytes.size)
 
-    val file = Buffer()
-
-    file.write(bytes, 0, bytes.size)
-
-    SystemFileSystem.sink(Path("./output.wav")).write(file, file.size)
-
-    sleep(5u)
+    runBlocking {
+        coroutineScope {
+            launch {
+                println("Start play")
+                playFromBuffer(bytes)
+                sleep(10u)
+                println("End play")
+            }
+        }
+    }
+//    val file = Buffer()
+//
+//    file.write(bytes, 0, bytes.size)
+//
+//    SystemFileSystem.sink(Path("./output.wav")).write(file, file.size)
+//
+//    sleep(5u)
 }

@@ -5,6 +5,7 @@ import pl.lemanski.plugin.KonanPluginExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidLibrary)
     id("maven-publish")
     id("pl.lemanski.plugin")
 }
@@ -12,7 +13,25 @@ plugins {
 group = "pl.lemanski.tinySoundFont"
 version = "0.0.1"
 
+android {
+    namespace = "pl.lemanski.tinySoundFont"
+    defaultConfig {
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/androidMain/cpp/CMakeLists.txt")
+        }
+    }
+}
+
 kotlin {
+    androidTarget().apply {
+        publishAllLibraryVariants()
+    }
+
     listOf(
         mingwX64(),
         linuxX64()

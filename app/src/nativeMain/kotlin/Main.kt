@@ -89,11 +89,11 @@ fun main(args: Array<String>) {
             }
         }
     }
-//    val file = Buffer()
-//
-//    file.write(bytes, 0, bytes.size)
-//
-//    SystemFileSystem.sink(Path("./output.wav")).write(file, file.size)
-//
-//    sleep(5u)
+    val file = Buffer()
+
+    file.write(bytes, 0, bytes.size)
+
+    SystemFileSystem.sink(Path("./output.wav")).write(file, file.size)
+
+    sleep(5u)
 }

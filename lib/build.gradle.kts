@@ -37,6 +37,8 @@ kotlin {
     listOf(
         mingwX64(),
         linuxX64()
+
+
     ).forEach { target ->
         target.apply {
             val main by compilations.getting

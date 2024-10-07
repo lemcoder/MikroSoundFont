@@ -16,7 +16,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PandaMidi"
+rootProject.name = "MikroSoundFont"
 include(":core")
-include(":app")
-include(":tinySoundFont")
+include(":lib")

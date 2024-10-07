@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace = "pl.lemanski.mikroSoundFont.core"
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -29,7 +30,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation(libs.coroutines.core)
-            implementation(projects.tinySoundFont)
+            implementation(projects.lib)
         }
 
         commonTest.dependencies {

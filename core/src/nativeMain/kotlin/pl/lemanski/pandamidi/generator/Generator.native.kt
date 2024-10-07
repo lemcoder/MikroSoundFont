@@ -1,7 +1,7 @@
 package pl.lemanski.pandamidi.generator
 
-import pl.lemanski.tinySoundFont.SoundFont
-import pl.lemanski.tinySoundFont.soundFont
+import pl.lemanski.mikroSoundFont.MikroSoundFont
+import pl.lemanski.mikroSoundFont.SoundFont
 
 internal object MinGWGenerator : Generator {
     private const val SAMPLE_RATE = 44100
@@ -10,7 +10,7 @@ internal object MinGWGenerator : Generator {
     private lateinit var soundFont: SoundFont
 
     override fun setSoundFont(path: String) {
-        soundFont = soundFont(path)
+        soundFont = MikroSoundFont.load(path)
         soundFont.setBankPreset(9, 128, 0)
         soundFont.setOutput(SoundFont.OutputMode.TSF_STEREO_INTERLEAVED, SAMPLE_RATE, 0.0f)
     }
@@ -38,7 +38,7 @@ internal object MinGWGenerator : Generator {
     private fun MidiMessage.process() {
         when (this) {
             is MidiMessageNoteOff -> soundFont.noteOff(channel, key)
-            is MidiMessageNoteOn  -> soundFont.noteOn(channel, key, velocity / 127.0f)
+            is MidiMessageNoteOn -> soundFont.noteOn(channel, key, velocity / 127.0f)
 
 //            is MidiMessageControlChange -> tsf_channel_midi_control(
 //                soundFont?.reinterpret(),
@@ -57,7 +57,7 @@ internal object MinGWGenerator : Generator {
 //                program.toInt(),
 //                (channel == 9u).toByte().toInt()
 //            )
-            else                  -> throw Exception("Unsupported command!")
+            else -> throw Exception("Unsupported command!")
         }
     }
 }

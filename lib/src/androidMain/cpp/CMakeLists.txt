@@ -7,7 +7,7 @@ project(core_native_lib)
 add_library(
         mikroSoundFontJNI                 # Name of the native library
         SHARED
-        ${CMAKE_SOURCE_DIR}/mikromidi.c
+        ${CMAKE_SOURCE_DIR}/mikro_sound_font_jni.c
 )
 
 # Include the shared header files from the project root's 'native/include' directory

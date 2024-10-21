@@ -10,11 +10,11 @@ plugins {
     id("pl.lemanski.plugin")
 }
 
-group = "pl.lemanski.mikroSoundFont"
-version = "0.0.1"
+group = "pl.lemanski.mikrosoundfont"
+version = "0.0.2"
 
 android {
-    namespace = "pl.lemanski.mikroSoundFont"
+    namespace = "pl.lemanski.mikrosoundfont"
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -78,5 +78,6 @@ configure<KonanPluginExtension> {
     sourceDir = "${rootDir}/native/src"
     headerDir = "${rootDir}/native/include"
     libName = "tsf"
-    konanPath = localKonanDir.listFiles()?.first { it.name.contains(libs.versions.kotlin.get()) }?.absolutePath
+    konanPath = localKonanDir.listFiles()
+        ?.first { it.name.contains(libs.versions.kotlin.get()) }?.absolutePath
 }

@@ -2,6 +2,7 @@ package pl.lemanski.mikroSoundFont.io.wav
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.Stack
 
 actual fun WavFileHeader.toByteArray(): ByteArray {
     val byteArray = ByteArray(44) // The size is based on the structure
@@ -36,4 +37,22 @@ actual fun WavFileHeader.toByteArray(): ByteArray {
     buffer.putInt(40, subchunk2Size.toInt())
 
     return byteArray
+}
+
+fun isValid(s: String): Boolean {
+    if (s.length % 2 != 0) {
+        return false
+    }
+
+    val stack = mutableListOf<Char>()
+    s.forEach {
+        when (it) {
+            '(', '{', '[' -> stack.add(it)
+            ')' -> if (stack.lastOrNull() == '(') stack.removeLast() else return false
+            '}' -> if (stack.lastOrNull() == '{') stack.removeLast() else return false
+            ']' -> if (stack.lastOrNull() == '[') stack.removeLast() else return false
+        }
+    }
+
+    return stack.size == 0
 }

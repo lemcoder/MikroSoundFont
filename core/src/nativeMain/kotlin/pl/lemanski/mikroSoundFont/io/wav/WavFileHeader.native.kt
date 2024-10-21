@@ -14,7 +14,6 @@ import kotlinx.cinterop.plus
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.value
-import pl.lemanski.mikroSoundFont.io.wav.WavFileHeader
 import platform.posix.memcpy
 
 @OptIn(ExperimentalForeignApi::class)

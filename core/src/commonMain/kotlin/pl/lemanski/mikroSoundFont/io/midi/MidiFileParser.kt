@@ -1,12 +1,19 @@
 package pl.lemanski.mikroSoundFont.io.midi
 
-import pl.lemanski.mikroSoundFont.midi.EventType
-import pl.lemanski.mikroSoundFont.midi.MidiEvent
+import pl.lemanski.mikroSoundFont.getLogger
+import pl.lemanski.mikroSoundFont.midi.MidiMessage
+import pl.lemanski.mikroSoundFont.midi.MidiMessage.Type
+import pl.lemanski.mikroSoundFont.midi.MidiMessageControlChange
+import pl.lemanski.mikroSoundFont.midi.MidiMessageNoteOff
+import pl.lemanski.mikroSoundFont.midi.MidiMessageNoteOn
+import pl.lemanski.mikroSoundFont.midi.MidiMessageProgramChange
 
 class MidiFileParser {
-    fun parseMidiFile(data: ByteArray): List<MidiEvent> {
+    private val logger = getLogger()
+
+    fun parseMidiFile(data: ByteArray): List<MidiMessage> {
         val header = parseMidiHeader(data)
-        val events = mutableListOf<MidiEvent>()
+        val events = mutableListOf<MidiMessage>()
 
         var trackStart = 14 // Header ends at byte 14
         repeat(header.numTracks) {
@@ -17,7 +24,7 @@ class MidiFileParser {
         return events
     }
 
-    fun readVariableLengthQuantity(data: ByteArray, index: Int): Pair<Int, Int> {
+    private fun readVariableLengthQuantity(data: ByteArray, index: Int): Pair<Int, Int> {
         var value = 0
         var i = index
         var byte: Int
@@ -31,7 +38,7 @@ class MidiFileParser {
         return Pair(value, i)
     }
 
-    fun parseMidiHeader(data: ByteArray): MidiFileHeader {
+    private fun parseMidiHeader(data: ByteArray): MidiFileHeader {
         val chunkType = data.sliceArray(0..3).map { it.toInt().toChar() }.joinToString("")
         if (chunkType != "MThd") throw IllegalArgumentException("Invalid MIDI header")
 
@@ -42,8 +49,8 @@ class MidiFileParser {
         return MidiFileHeader(format, numTracks, division)
     }
 
-    fun parseTrack(data: ByteArray, trackStart: Int): List<MidiEvent> {
-        val events = mutableListOf<MidiEvent>()
+    fun parseTrack(data: ByteArray, trackStart: Int): List<MidiMessage> {
+        val events = mutableListOf<MidiMessage>()
         var index = trackStart + 8 // Skip "MTrk" and track length
         var lastStatusByte = 0
 
@@ -65,26 +72,45 @@ class MidiFileParser {
             val command = lastStatusByte and 0xF0
             val channel = lastStatusByte and 0x0F
 
-            when (command) {
-                0x90 -> { // Note On
+            when (command.toType()) {
+                Type.NOTE_OFF         -> {
+                    val key = data[index].toInt() and 0xFF
+                    events.add(MidiMessageNoteOff(deltaTime, channel, key))
+                    index += 2
+                }
+                Type.NOTE_ON          -> {
                     val key = data[index].toInt() and 0xFF
                     val velocity = data[index + 1].toInt() and 0xFF
-                    events.add(MidiEvent(deltaTime.toLong(), EventType.NOTE_ON, listOf(channel, key, velocity)))
+                    events.add(MidiMessageNoteOn(deltaTime, channel, key, velocity))
                     index += 2
                 }
-                0x80 -> { // Note Off
-                    val key = data[index].toInt() and 0xFF
-                    events.add(MidiEvent(deltaTime.toLong(), EventType.NOTE_OFF, listOf(channel, key)))
-                    index += 2
-                }
-                0xC0 -> { // Program Change
+                Type.PROGRAM_CHANGE   -> {
                     val program = data[index].toInt() and 0xFF
-                    events.add(MidiEvent(deltaTime.toLong(), EventType.PROGRAM_CHANGE, listOf(channel, program)))
+                    events.add(MidiMessageProgramChange(deltaTime, channel, program))
                     index++
                 }
-                // Add more cases for other types of MIDI events
+                Type.CONTROL_CHANGE   -> {
+                    val control = data[index].toInt() and 0xFF
+                    val value = data[index + 1].toInt() and 0xFF
+                    events.add(MidiMessageControlChange(deltaTime, channel, control, value))
+                    index += 2
+                }
+                Type.KEY_PRESSURE     -> {
+                    logger.log("KEY_PRESSURE")
+                }
+                Type.CHANNEL_PRESSURE -> {
+                    logger.log("CHANNEL_PRESSURE")
+                }
+                Type.PITCH_BEND       -> {
+                    logger.log("PITCH_BEND")
+                }
+                Type.SET_TEMPO        -> {
+                    logger.log("SET_TEMPO")
+                }
             }
         }
         return events
     }
+
+    private fun Int.toType(): Type = Type.entries.find { it.value == this } ?: throw IllegalArgumentException("Unknown MIDI event: $this")
 }

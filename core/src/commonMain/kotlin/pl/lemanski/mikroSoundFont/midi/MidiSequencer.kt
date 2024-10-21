@@ -1,47 +1,49 @@
 package pl.lemanski.mikroSoundFont.midi
 
 import pl.lemanski.mikroSoundFont.SoundFont
+import pl.lemanski.mikroSoundFont.getLogger
 
 class MidiSequencer(
-    private val soundFont: SoundFont
+    private val soundFont: SoundFont,
+    private val sampleRate: Int,
+    private val channelCount: Int,
+    private val sampleBlockSize: Int
 ) {
+    private val logger = getLogger()
     private var currentTime = 0L
-    private val events = mutableListOf<MidiEvent>()
+    private val events = mutableListOf<MidiMessage>()
 
-    fun loadMidiEvents(midiEvents: List<MidiEvent>) {
+    fun loadMidiEvents(midiEvents: List<MidiMessage>) {
         events.clear()
         events.addAll(midiEvents)
     }
 
-    fun play() {
-        events.forEach { event ->
-            currentTime += event.deltaTime
-            handleEvent(event)
+    fun generate(midiMessage: MidiMessage): FloatArray {
+        var currentTime = 0.0
+        var audioBuffer = FloatArray(0)
+        val i = events.iterator()
+        var message: MidiMessage? = if (i.hasNext()) i.next() else return floatArrayOf()
+
+        while (i.hasNext()) {
+            message?.process()
+            message = i.next()
+
+            val targetTime = message.time.toDouble()
+
+            while (targetTime >= currentTime) {
+                currentTime += sampleBlockSize * (1000.0 / sampleRate)
+                audioBuffer += soundFont.renderFloat(sampleBlockSize, false)
+            }
         }
+
+        return audioBuffer
     }
 
-    private fun handleEvent(event: MidiEvent) {
-        when (event.eventType) {
-            EventType.NOTE_ON        -> soundFont.noteOn(
-                event.data[0],
-                event.data[1],
-                event.data[2] / 127.0f
-            )
-            EventType.NOTE_OFF       -> soundFont.noteOff(event.data[0], event.data[1])
-            EventType.PROGRAM_CHANGE -> soundFont.setBankPreset(
-                0,
-                event.data[0],
-                event.data[1]
-            )
-            EventType.CONTROL_CHANGE -> handleControlChange(
-                event.data[0],
-                event.data[1],
-                event.data[2]
-            )
+    private fun MidiMessage.process() {
+        when (this) {
+            is MidiMessageNoteOff -> soundFont.noteOff(channel, key)
+            is MidiMessageNoteOn  -> soundFont.noteOn(channel, key, velocity / 127.0f)
+            else                  -> logger.log("Unknown message type ${type.name}")
         }
-    }
-
-    private fun handleControlChange(controller: Int, value: Int, channel: Int) {
-        // Handle pitch bends, volume controls, etc.
     }
 }

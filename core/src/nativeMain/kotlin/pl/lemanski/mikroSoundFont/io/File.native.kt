@@ -12,7 +12,7 @@ actual fun loadFile(path: String): ByteArray {
     val file = fopen(path, "r") ?: throw IllegalArgumentException("Could not open file")
     try {
         fseek(file, 0, SEEK_END)
-        val fileSize = ftell(file)
+        val fileSize = ftell(file).toInt()
         rewind(file)
         val buffer = ByteArray(fileSize)
 

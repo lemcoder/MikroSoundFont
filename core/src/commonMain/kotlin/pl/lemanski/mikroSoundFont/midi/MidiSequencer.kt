@@ -43,7 +43,7 @@ class MidiSequencer(
         when (this) {
             is MidiMessageNoteOff -> soundFont.noteOff(channel, key)
             is MidiMessageNoteOn  -> soundFont.noteOn(channel, key, velocity / 127.0f)
-            else                  -> logger.log("Unknown message type ${type.name}")
+            else                  -> logger.log("Unknown message type")
         }
     }
 }

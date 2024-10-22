@@ -30,7 +30,7 @@ actual fun loadFile(path: String): ByteArray {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun saveFile(path: String, byteArray: ByteArray) {
+actual fun saveFile(byteArray: ByteArray, path: String) {
     val file = fopen(path, "wb") ?: throw IllegalArgumentException("Could not open file: $path")
     try {
         memScoped {

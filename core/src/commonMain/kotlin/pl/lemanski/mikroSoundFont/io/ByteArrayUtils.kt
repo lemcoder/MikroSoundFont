@@ -41,3 +41,8 @@ fun FloatArray.toByteArrayBigEndian(): ByteArray {
     }
     return byteArray
 }
+
+
+fun ByteArray.readShortAt(index: Int): Short {
+    return ((this[index].toInt() and 0xFF) shl 8 or (this[index + 1].toInt() and 0xFF)).toShort()
+}

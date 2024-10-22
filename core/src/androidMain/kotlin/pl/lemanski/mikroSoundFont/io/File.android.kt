@@ -15,7 +15,7 @@ actual fun loadFile(path: String): ByteArray {
     }
 }
 
-actual fun saveFile(path: String, byteArray: ByteArray) {
+actual fun saveFile(byteArray: ByteArray, path: String) {
     val file = File(path)
     if (file.exists()) {
         file.createNewFile()

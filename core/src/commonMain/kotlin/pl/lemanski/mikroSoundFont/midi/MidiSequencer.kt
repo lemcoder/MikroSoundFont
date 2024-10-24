@@ -40,10 +40,10 @@ class MidiSequencer(
     }
 
     private fun MidiMessage.process() {
-        when (this) {
-            is MidiMessageNoteOff -> soundFont.noteOff(channel, key)
-            is MidiMessageNoteOn  -> soundFont.noteOn(channel, key, velocity / 127.0f)
-            else                  -> logger.log("Unknown message type")
+        when (this.type) {
+            is MidiMessageType.NoteOff         -> soundFont.noteOff(channel, type.key)
+            is MidiMessageType.NoteOn          -> soundFont.noteOn(channel, type.key, type.velocity / 127.0f)
+            else                               -> logger.log("Unknown message type")
         }
     }
 }

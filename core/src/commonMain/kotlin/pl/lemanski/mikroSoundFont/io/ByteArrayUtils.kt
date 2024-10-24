@@ -1,5 +1,7 @@
 package pl.lemanski.mikroSoundFont.io
 
+import kotlin.experimental.and
+
 /**
  * Convert byte array to float array with little endian order
  */
@@ -44,5 +46,43 @@ fun FloatArray.toByteArrayBigEndian(): ByteArray {
 
 
 fun ByteArray.readShortAt(index: Int): Short {
-    return ((this[index].toInt() and 0xFF) shl 8 or (this[index + 1].toInt() and 0xFF)).toShort()
+    val shortBuffer = this.copyOfRange(index, index + 2).map { it.toInt() and 0xFF }
+    return (shortBuffer[1] or (shortBuffer[0] shl 8)).toShort()
+}
+
+fun ByteArray.readIntAt(index: Int): Int {
+    val intBuffer = this.copyOfRange(index, index + 4).map { it.toInt() and 0xFF }
+    return intBuffer[3] or (intBuffer[2] shl 8) or (intBuffer[1] shl 16) or (intBuffer[0] shl 24)
+}
+
+fun ByteArray.readByteAt(index: Int): Byte {
+    return this[index] and 0xFF.toByte()
+}
+
+fun ByteArray.readVariableLengthAt(index: Int): Pair<Int, Int>? {
+    var pos = index
+    var result = 0
+    var i = 0
+    var countinuation: Int
+
+    while (i < 4) {
+        if (pos >= size) {
+            break
+        }
+
+        countinuation = this[pos].toInt() and 0xFF
+        pos++
+
+        if (countinuation and 0x80 != 0) {
+            // store data bits in result
+            result = ((result or (countinuation and 0x7F)) shl 7)
+        } else {
+            // return result
+            return (result or countinuation) to pos
+        }
+
+        i++
+    }
+
+    return null
 }

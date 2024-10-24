@@ -5,19 +5,21 @@ import pl.lemanski.mikroSoundFont.io.readShortAt
 
 data class MidiFileHeader(
     val trackCount: Int,
-    val division: Int
+    val division: Int,
 ) {
     companion object {
+        const val SIZE_IN_BYTES = 14
+
         @OptIn(ExperimentalStdlibApi::class)
         fun fromBytes(buffer: ByteArray): MidiFileHeader {
             val trackCount: Int
             val division: Int
 
-            if (buffer.size < 14) {
+            if (buffer.size < SIZE_IN_BYTES) {
                 throw InvalidMidiDataException("Unexpected buffer size. Buffer is too small.")
             }
 
-            val headerBytes = buffer.copyOfRange(0, 14)
+            val headerBytes = buffer.copyOfRange(0, SIZE_IN_BYTES)
 
             if (headerBytes.copyOfRange(0, 4).decodeToString() != "MThd" || headerBytes[7] != 6.toByte() || headerBytes[9] > 2) {
                 throw InvalidMidiDataException("Invalid MThd header: ${headerBytes.toHexString()}")
@@ -30,7 +32,7 @@ data class MidiFileHeader(
             trackCount = headerBytes.readShortAt(10).toInt()
             division = headerBytes.readShortAt(12).toInt() // ticks per beat
 
-            if (trackCount <= 0 ) {
+            if (trackCount <= 0) {
                 throw InvalidMidiDataException("Invalid track values: $trackCount")
             }
 

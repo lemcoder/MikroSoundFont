@@ -19,6 +19,7 @@ actual fun loadFile(path: String): ByteArray {
         memScoped {
             val bytesRead = fread(buffer.refTo(0), 1.convert(), fileSize.convert(), file).toInt()
             if (bytesRead != fileSize) {
+                println("$bytesRead :: $fileSize")
                 throw IllegalStateException("Failed to read the entire file: $path")
             }
         }

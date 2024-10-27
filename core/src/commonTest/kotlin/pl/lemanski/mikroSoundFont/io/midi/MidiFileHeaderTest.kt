@@ -19,62 +19,63 @@ class MidiFileHeaderTest {
 
     @Test
     fun should_parse_midi_file_header() {
-        val expectedHeader = MidiFileHeader(
+        val expectedHeader = MidiFile.Header(
             trackCount = 9,
             division = 480
         )
 
-        val header = MidiFileHeader.fromBytes(validBuffer)
+        val parser = MidiFileParser(validBuffer)
+        val header = parser.parseHeader()
 
         assertEquals(expectedHeader, header)
     }
 
     @Test
     fun should_throw_invalid_length_exception() {
-        assertFailsWith<InvalidMidiDataException>("Unexpected buffer size. Buffer is too small.") {
-            MidiFileHeader.fromBytes(invalidLengthBuffer)
+        assertFailsWith<InvalidMidiDataException> {
+            MidiFileParser(invalidLengthBuffer).parseHeader()
         }
     }
 
     @Test
     fun should_throw_invalid_mthd_exception() {
-        assertFailsWith<InvalidMidiDataException>("Invalid MThd header: ${invalidHeaderStringBuffer.toHexString()}") {
-            MidiFileHeader.fromBytes(invalidHeaderStringBuffer)
+        assertFailsWith<InvalidMidiDataException> {
+            MidiFileParser(invalidHeaderStringBuffer).parseHeader()
         }
     }
 
     @Test
     fun should_throw_invalid_mthd_exception_2() {
-        assertFailsWith<InvalidMidiDataException>("Invalid MThd header: ${invalidHeaderByteBuffer.toHexString()}") {
-            MidiFileHeader.fromBytes(invalidHeaderStringBuffer)
+        assertFailsWith<InvalidMidiDataException> {
+            MidiFileParser(invalidHeaderByteBuffer).parseHeader()
         }
     }
 
     @Test
     fun should_throw_invalid_mthd_exception_3() {
-        assertFailsWith<InvalidMidiDataException>("Invalid MThd header: ${invalidHeaderFormatBuffer.toHexString()}") {
-            MidiFileHeader.fromBytes(invalidHeaderStringBuffer)
+        assertFailsWith<InvalidMidiDataException> {
+            MidiFileParser(invalidHeaderFormatBuffer).parseHeader()
         }
     }
 
     @Test
     fun should_throw_unsupported_timing() {
-        assertFailsWith<InvalidMidiDataException>("Unsupported SMPTE timing: ${invalidTimingBuffer.toHexString()}") {
-            MidiFileHeader.fromBytes(invalidHeaderStringBuffer)
+        assertFailsWith<InvalidMidiDataException> {
+            MidiFileParser(invalidTimingBuffer).parseHeader()
         }
     }
 
     @Test
     fun should_throw_invalid_track_count() {
         assertFailsWith<InvalidMidiDataException>("Invalid track values: -1") {
-            MidiFileHeader.fromBytes(invalidTrackCountBuffer)
+            MidiFileParser(invalidTrackCountBuffer).parseHeader()
         }
     }
 
     @Test
     fun should_throw_invalid_division() {
         assertFailsWith<InvalidMidiDataException>("Invalid division values: -1") {
-            MidiFileHeader.fromBytes(invalidDivisionBuffer)
+            MidiFileParser(invalidDivisionBuffer).parseHeader()
         }
     }
 }

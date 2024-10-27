@@ -18,7 +18,7 @@ class MidiSequencer(
         events.addAll(midiEvents)
     }
 
-    fun generate(midiMessage: MidiMessage): FloatArray {
+    fun generate(): FloatArray {
         var currentTime = 0.0
         var audioBuffer = FloatArray(0)
         val i = events.iterator()
@@ -40,10 +40,12 @@ class MidiSequencer(
     }
 
     private fun MidiMessage.process() {
-        when (this.type) {
-            is MidiMessageType.NoteOff         -> soundFont.noteOff(channel, type.key)
-            is MidiMessageType.NoteOn          -> soundFont.noteOn(channel, type.key, type.velocity / 127.0f)
-            else                               -> logger.log("Unknown message type")
+        type.let {
+            when (it) {
+                is MidiMessageType.NoteOff -> soundFont.noteOff(channel, it.key)
+                is MidiMessageType.NoteOn  -> soundFont.noteOn(channel, it.key, it.velocity / 127.0f)
+                else                       -> logger.log("Unknown message type")
+            }
         }
     }
 }

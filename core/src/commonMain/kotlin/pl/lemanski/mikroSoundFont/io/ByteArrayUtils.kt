@@ -58,31 +58,3 @@ fun ByteArray.readIntAt(index: Int): Int {
 fun ByteArray.readByteAt(index: Int): Byte {
     return this[index] and 0xFF.toByte()
 }
-
-fun ByteArray.readVariableLengthAt(index: Int): Pair<Int, Int>? {
-    var pos = index
-    var result = 0
-    var i = 0
-    var countinuation: Int
-
-    while (i < 4) {
-        if (pos >= size) {
-            break
-        }
-
-        countinuation = this[pos].toInt() and 0xFF
-        pos++
-
-        if (countinuation and 0x80 != 0) {
-            // store data bits in result
-            result = ((result or (countinuation and 0x7F)) shl 7)
-        } else {
-            // return result
-            return (result or countinuation) to pos
-        }
-
-        i++
-    }
-
-    return null
-}

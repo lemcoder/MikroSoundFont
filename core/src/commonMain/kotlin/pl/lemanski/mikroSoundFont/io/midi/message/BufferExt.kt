@@ -1,7 +1,6 @@
 package pl.lemanski.mikroSoundFont.io.midi.message
 
 import kotlinx.io.Buffer
-import kotlinx.io.readUByte
 import pl.lemanski.mikroSoundFont.InvalidMidiDataException
 
 internal fun Buffer.readVarLen(): Int {
@@ -10,7 +9,7 @@ internal fun Buffer.readVarLen(): Int {
     var bytesRead = 0
 
     do {
-        c = readUByte().toInt()
+        c = readByte().toInt() and 0xFF
         bytesRead++
         r = (r shl 7) or (c and 0x7F) // add 7 LSB of c to r
     } while (c and 0x80 != 0 && bytesRead < 4) // until c MSB is 1

@@ -6,41 +6,6 @@ import pl.lemanski.mikroSoundFont.midi.MidiMessage
 import pl.lemanski.mikroSoundFont.midi.MidiMessageType
 import pl.lemanski.mikroSoundFont.midi.MidiVoiceMessage
 
-/**
- * else //channel message
- * 	{
- * 		int param;
- * 		if ((param = tml_readbyte(p)) < 0) { TML_WARN("Unexpected end of file"); return -1; }
- * 		evt->key = (param & 0x7f);
- * 		evt->channel = (status & 0x0f);
- * 		switch (evt->type = (status & 0xf0))
- * 		{
- * 			case TML_NOTE_OFF:
- * 			case TML_NOTE_ON:
- * 			case TML_KEY_PRESSURE:
- * 			case TML_CONTROL_CHANGE:
- * 				if ((param = tml_readbyte(p)) < 0) { TML_WARN("Unexpected end of file"); return -1; }
- * 				evt->velocity = (param & 0x7f);
- * 				break;
- *
- * 			case TML_PITCH_BEND:
- * 				if ((param = tml_readbyte(p)) < 0) { TML_WARN("Unexpected end of file"); return -1; }
- * 				evt->pitch_bend = ((param & 0x7f) << 7) | evt->key;
- * 				break;
- *
- * 			case TML_PROGRAM_CHANGE:
- * 			case TML_CHANNEL_PRESSURE:
- * 				evt->velocity = 0;
- * 				break;
- *
- * 			default: //ignore system/manufacture messages
- * 				evt->type = 0;
- * 				break;
- * 		}
- * 	}
- */
-
-
 internal class MidiVoiceMessageParser(
     private val buffer: Buffer
 ) : MidiMessageParser {
@@ -57,35 +22,93 @@ internal class MidiVoiceMessageParser(
     override fun supportedTypes(): Set<Int> = messageParserMap.keys
 
     override fun parse(status: Int, deltaTime: Int): MidiMessage = messageParserMap[status and 0xf0]
-        ?.let { it(deltaTime) }
+        ?.let { it(status, deltaTime) }
         ?: throw InvalidMidiDataException("Unknown midi voice message type: ${(status and 0xf0).toString(16)}")
 
-    private fun parseNoteOff(deltaTime: Int): MidiVoiceMessage.NoteOff {
-        TODO()
+    private fun parseNoteOff(status: Int, deltaTime: Int): MidiVoiceMessage.NoteOff {
+        val channel = status and 0x0f
+        val note = buffer.readByte().toInt()
+        val velocity = buffer.readByte().toInt()
+
+        return MidiVoiceMessage.NoteOff(
+            time = deltaTime,
+            channel = channel,
+            key = note,
+            velocity = velocity
+        )
     }
 
-    private fun parseNoteOn(deltaTime: Int): MidiVoiceMessage.NoteOn {
-        TODO()
+    private fun parseNoteOn(status: Int, deltaTime: Int): MidiVoiceMessage.NoteOn {
+        val channel = status and 0x0f
+        val note = buffer.readByte().toInt()
+        val velocity = buffer.readByte().toInt()
+
+        return MidiVoiceMessage.NoteOn(
+            time = deltaTime,
+            channel = channel,
+            key = note,
+            velocity = velocity
+        )
     }
 
-    private fun parseKeyPressure(deltaTime: Int): MidiVoiceMessage.KeyPressure {
-        TODO()
+    private fun parseKeyPressure(status: Int, deltaTime: Int): MidiVoiceMessage.KeyPressure {
+        val channel = status and 0x0f
+        val note = buffer.readByte().toInt()
+        val keyPressure = buffer.readByte().toInt()
+
+        return MidiVoiceMessage.KeyPressure(
+            time = deltaTime,
+            channel = channel,
+            key = note,
+            keyPressure = keyPressure
+        )
     }
 
-    private fun parseControlChange(deltaTime: Int): MidiVoiceMessage.ControlChange {
-        TODO()
+    private fun parseControlChange(status: Int, deltaTime: Int): MidiVoiceMessage.ControlChange {
+        val channel = status and 0x0f
+        val control = buffer.readByte().toInt()
+        val controlValue = buffer.readByte().toInt()
+
+        return MidiVoiceMessage.ControlChange(
+            time = deltaTime,
+            channel = channel,
+            control = control,
+            controlValue = controlValue
+        )
     }
 
-    private fun parseProgramChange(deltaTime: Int): MidiVoiceMessage.ProgramChange {
-        TODO()
+    private fun parseProgramChange(status: Int, deltaTime: Int): MidiVoiceMessage.ProgramChange {
+        val channel = status and 0x0f
+        val program = buffer.readByte().toInt()
+
+        return MidiVoiceMessage.ProgramChange(
+            time = deltaTime,
+            channel = channel,
+            program = program
+        )
     }
 
-    private fun parseChannelPressure(deltaTime: Int): MidiVoiceMessage.ChannelPressure {
-        TODO()
+    private fun parseChannelPressure(status: Int, deltaTime: Int): MidiVoiceMessage.ChannelPressure {
+        val channel = status and 0x0f
+        val channelPressure = buffer.readByte().toInt()
+
+        return MidiVoiceMessage.ChannelPressure(
+            time = deltaTime,
+            channel = channel,
+            channelPressure = channelPressure
+        )
     }
 
-    private fun parsePitchBend(deltaTime: Int): MidiVoiceMessage.PitchBend {
-        TODO()
+    private fun parsePitchBend(status: Int, deltaTime: Int): MidiVoiceMessage.PitchBend {
+        val channel = status and 0x0f
+        val lsb = buffer.readByte().toInt() and 0x7F
+        val msb = buffer.readByte().toInt() and 0x7F
+        val pitchBend = (msb shl 7) or lsb
+
+        return MidiVoiceMessage.PitchBend(
+            time = deltaTime,
+            channel = channel,
+            pitchBend = pitchBend
+        )
     }
 }
-

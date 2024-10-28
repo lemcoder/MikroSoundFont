@@ -66,14 +66,14 @@ internal class MidiFileParser(
         )
     }
 
-    internal fun parseTracks(n: Int): List<MidiTrack> = List(n) { idx -> parseTrack(idx) }
+    internal fun parseTracks(n: Int): List<MidiTrack> = List(n) { parseTrack() }
 
-    internal fun parseTrack(id: Int): MidiTrack {
+    internal fun parseTrack(): MidiTrack {
         val trackHeader = parseTrackHeader()
         val trackBuffer = Buffer()
         val messages = mutableListOf<MidiMessage>()
 
-        buffer.copyTo(trackBuffer, 0L, trackHeader.dataSize.toLong())
+        buffer.readAtMostTo(trackBuffer, trackHeader.dataSize.toLong())
 
         val messageContext = MidiMessageContext(trackBuffer)
         while (trackBuffer.size > 0) {
@@ -88,12 +88,12 @@ internal class MidiFileParser(
 
     internal fun parseTrackHeader(): MidiTrack.Header {
         if (buffer.readString(4) != "MTrk") {
-            throw InvalidMidiDataException("Invalid MTrk header: $buffer")
+            throw InvalidMidiDataException("Invalid MTrk header")
         }
 
         val trackLength = buffer.readInt()
         if (trackLength < 0) {
-            throw InvalidMidiDataException("Invalid MTrk header.Track length is negative: $buffer")
+            throw InvalidMidiDataException("Invalid MTrk header.Track length is negative.")
         }
 
         return MidiTrack.Header(dataSize = trackLength)

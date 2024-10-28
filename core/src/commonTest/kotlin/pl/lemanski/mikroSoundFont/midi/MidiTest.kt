@@ -1,5 +1,7 @@
 package pl.lemanski.mikroSoundFont.midi
 
+import pl.lemanski.mikroSoundFont.io.loadFile
+import pl.lemanski.mikroSoundFont.io.midi.MidiFileParser
 import kotlin.test.Test
 
 class MidiTest {
@@ -7,5 +9,12 @@ class MidiTest {
 
     @Test
     fun testMidi() {
+        val midiFileBuffer = loadFile("$dir\\venture.mid")
+        val midiFile = MidiFileParser(midiFileBuffer).parse()
+        midiFile.tracks.forEach {
+            it.messages.forEach {
+                println(it.type.name)
+            }
+        }
     }
 }

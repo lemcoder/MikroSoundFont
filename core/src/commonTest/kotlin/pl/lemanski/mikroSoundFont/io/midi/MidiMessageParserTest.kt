@@ -2,6 +2,7 @@ package pl.lemanski.mikroSoundFont.io.midi
 
 import kotlinx.io.Buffer
 import pl.lemanski.mikroSoundFont.InvalidMidiDataException
+import pl.lemanski.mikroSoundFont.io.midi.message.readVarLen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

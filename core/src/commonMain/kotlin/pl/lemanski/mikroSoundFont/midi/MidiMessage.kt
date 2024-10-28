@@ -42,7 +42,6 @@ package pl.lemanski.mikroSoundFont.midi
 sealed interface MidiMessage {
     val type: MidiMessageType
     val time: Int
-    // Add track number ???
 }
 
 sealed class MidiSystemMessage : MidiMessage {
@@ -99,6 +98,7 @@ sealed class MidiMetaMessage : MidiMessage {
 sealed class MidiVoiceMessage : MidiMessage {
     data class NoteOn(
         override val time: Int,
+        val channel: Int,
         val key: Int,
         val velocity: Int,
     ) : MidiVoiceMessage() {
@@ -107,6 +107,7 @@ sealed class MidiVoiceMessage : MidiMessage {
 
     data class NoteOff(
         override val time: Int,
+        val channel: Int,
         val key: Int,
         val velocity: Int,
     ) : MidiVoiceMessage() {
@@ -115,6 +116,7 @@ sealed class MidiVoiceMessage : MidiMessage {
 
     data class KeyPressure(
         override val time: Int,
+        val channel: Int,
         val key: Int,
         val keyPressure: Int,
     ) : MidiVoiceMessage() {
@@ -123,6 +125,7 @@ sealed class MidiVoiceMessage : MidiMessage {
 
     data class ControlChange(
         override val time: Int,
+        val channel: Int,
         val control: Int,
         val controlValue: Int,
     ) : MidiVoiceMessage() {
@@ -131,6 +134,7 @@ sealed class MidiVoiceMessage : MidiMessage {
 
     data class ProgramChange(
         override val time: Int,
+        val channel: Int,
         val program: Int,
     ) : MidiVoiceMessage() {
         override val type: MidiMessageType = MidiMessageType.PROGRAM_CHANGE
@@ -138,6 +142,7 @@ sealed class MidiVoiceMessage : MidiMessage {
 
     data class ChannelPressure(
         override val time: Int,
+        val channel: Int,
         val channelPressure: Int,
     ) : MidiVoiceMessage() {
         override val type: MidiMessageType = MidiMessageType.CHANNEL_PRESSURE
@@ -145,6 +150,7 @@ sealed class MidiVoiceMessage : MidiMessage {
 
     data class PitchBend(
         override val time: Int,
+        val channel: Int,
         val pitchBend: Int,
     ) : MidiVoiceMessage() {
         override val type: MidiMessageType = MidiMessageType.PITCH_BEND

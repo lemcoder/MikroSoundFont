@@ -116,4 +116,9 @@ interface Channel {
      * Get current tuning of all playing voices in semitones
      */
     fun getTuning(): Float
+
+    /**
+     * Set MIDI control value
+     */
+    fun setMidiControl(control: Int, controlValue: Int)
 }

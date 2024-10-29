@@ -6,28 +6,24 @@ import pl.lemanski.mikroSoundFont.getLogger
 class MidiSequencer(
     private val soundFont: SoundFont,
     private val sampleRate: Int,
-    private val sampleBlockSize: Int
 ) {
+    private val sampleBlockSize: Int = 512
     private val logger = getLogger()
     private var currentTime = 0L
-    private val events = mutableListOf<MidiMessage>()
+    private val messages = mutableListOf<MidiMessage>()
 
-    fun loadMidiEvents(midiEvents: List<MidiMessage>) {
-        events.clear()
-        events.addAll(midiEvents)
+    fun loadMidiEvents(midiMessages: List<MidiMessage>) {
+        messages.clear()
+        messages.addAll(midiMessages)
     }
 
     fun generate(): FloatArray {
         var currentTime = 0.0
         var audioBuffer = FloatArray(0)
-        val i = events.iterator()
-        var message: MidiMessage? = if (i.hasNext()) i.next() else return floatArrayOf()
 
-        while (i.hasNext()) {
-            message?.process()
-            message = i.next()
-
-            val targetTime = message.time.toDouble()
+        for (msg in messages) {
+            msg.process()
+            val targetTime = msg.time.toDouble()
 
             while (targetTime >= currentTime) {
                 currentTime += sampleBlockSize * (1000.0 / sampleRate)
@@ -39,8 +35,11 @@ class MidiSequencer(
     }
 
     private fun MidiMessage.process() = when (this) {
-        is MidiVoiceMessage.NoteOff -> soundFont.noteOff(channel, key)
-        is MidiVoiceMessage.NoteOn  -> soundFont.noteOn(channel, key, velocity / 127.0f)
-        else                        -> logger.log("Unknown message type")
+        is MidiVoiceMessage.NoteOff       -> soundFont.channels[channel].noteOff(key)
+        is MidiVoiceMessage.NoteOn        -> soundFont.channels[channel].noteOn(key, velocity / 127.0f)
+        is MidiVoiceMessage.PitchBend     -> soundFont.channels[channel].setPitchWheel(pitchBend)
+        is MidiVoiceMessage.ProgramChange -> soundFont.channels[channel].setPresetNumber(program, channel == 9)
+        is MidiVoiceMessage.ControlChange -> soundFont.channels[channel].setMidiControl(control, controlValue)
+        else                              -> { }
     }
 }

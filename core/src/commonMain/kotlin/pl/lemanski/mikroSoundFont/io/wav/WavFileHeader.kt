@@ -1,5 +1,10 @@
 package pl.lemanski.mikroSoundFont.io.wav
 
+import kotlinx.io.Buffer
+import kotlinx.io.readByteArray
+import kotlinx.io.writeIntLe
+import kotlinx.io.writeShortLe
+
 data class WavFileHeader(
     val chunkID: String = "RIFF",
     val chunkSize: UInt,
@@ -29,4 +34,21 @@ data class WavFileHeader(
     }
 }
 
-expect fun WavFileHeader.toByteArray(): ByteArray
+fun WavFileHeader.toByteArray(): ByteArray {
+    return Buffer()
+        .apply {
+            write(chunkID.encodeToByteArray(), 0, 4)
+            writeIntLe(chunkSize.toInt())
+            write(format.encodeToByteArray(), 0, 4)
+            write(subchunk1ID.encodeToByteArray(), 0, 4)
+            writeIntLe(subchunk1Size.toInt())
+            writeShortLe(audioFormat.toShort())
+            writeShortLe(numChannels.toShort())
+            writeIntLe(sampleRate.toInt())
+            writeIntLe(byteRate.toInt())
+            writeShortLe(blockAlign.toShort())
+            writeShortLe(bitsPerSample.toShort())
+            write(subchunk2ID.encodeToByteArray(), 0, 4)
+            writeIntLe(subchunk2Size.toInt())
+        }.readByteArray()
+}

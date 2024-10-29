@@ -13,6 +13,7 @@ import tinySoundFont.tsf_channel_get_preset_index
 import tinySoundFont.tsf_channel_get_preset_number
 import tinySoundFont.tsf_channel_get_tuning
 import tinySoundFont.tsf_channel_get_volume
+import tinySoundFont.tsf_channel_midi_control
 import tinySoundFont.tsf_channel_note_off
 import tinySoundFont.tsf_channel_note_off_all
 import tinySoundFont.tsf_channel_note_on
@@ -166,6 +167,12 @@ internal class ChannelDelegate(
     override fun getTuning(): Float {
         return withSoundFont {
             tsf_channel_get_tuning(it.reinterpret(), number)
+        }
+    }
+
+    override fun setMidiControl(control: Int, controlValue: Int) {
+        return withSoundFont {
+            tsf_channel_midi_control(it.reinterpret(), number, control, controlValue)
         }
     }
 

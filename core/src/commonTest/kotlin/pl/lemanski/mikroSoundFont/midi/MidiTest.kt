@@ -14,15 +14,16 @@ class MidiTest {
 
     @Test
     fun testMidi() {
-        val midiFileBuffer = loadFile("$dir\\venture.mid")
+        val midiFileBuffer = loadFile("$dir\\hbd.mid")
         val midiFile = MidiFileParser(midiFileBuffer).parse()
         val messages = midiFile.getMessagesOverTime()
 
         val soundFont = MikroSoundFont.load("$dir\\font.sf2")
 
-        val sequencer = MidiSequencer(soundFont, 44100, 512)
+        val sequencer = MidiSequencer(soundFont, 44_100)
         sequencer.loadMidiEvents(messages)
         val wavBytes = sequencer.generate()
+        println(wavBytes.size)
 
         val wavHeader =  WavFileHeader.write(44_100u, wavBytes.size.toUInt(), 2u)
         val file = wavHeader.toByteArray() + wavBytes.toByteArrayLittleEndian()

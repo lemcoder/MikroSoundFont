@@ -41,18 +41,18 @@ package pl.lemanski.mikroSoundFont.midi
  */
 sealed interface MidiMessage {
     val type: MidiMessageType
-    val time: Int
+    var time: Int
 }
 
 sealed class MidiSystemMessage : MidiMessage {
     data object Sysex : MidiSystemMessage() {
         override val type: MidiMessageType = MidiMessageType.SYS_EX
-        override val time: Int = 0
+        override var time: Int = 0
     }
 
     data object Eox : MidiSystemMessage() {
         override val type: MidiMessageType = MidiMessageType.EOX
-        override val time: Int = 0
+        override var time: Int = 0
     }
 
     // other messages
@@ -82,14 +82,14 @@ sealed class MidiSystemMessage : MidiMessage {
 
 sealed class MidiMetaMessage : MidiMessage {
     data class SetTempo(
-        override val time: Int,
-        val bpm: Int,
+        override var time: Int,
+        val tempo: Int,
     ) : MidiMetaMessage() {
         override val type: MidiMessageType = MidiMessageType.SET_TEMPO
     }
 
     data class EndOfTrack(
-        override val time: Int
+        override var time: Int
     ) : MidiMetaMessage() {
         override val type: MidiMessageType = MidiMessageType.END_OF_TRACK
     }
@@ -97,7 +97,7 @@ sealed class MidiMetaMessage : MidiMessage {
 
 sealed class MidiVoiceMessage : MidiMessage {
     data class NoteOn(
-        override val time: Int,
+        override var time: Int,
         val channel: Int,
         val key: Int,
         val velocity: Int,
@@ -106,7 +106,7 @@ sealed class MidiVoiceMessage : MidiMessage {
     }
 
     data class NoteOff(
-        override val time: Int,
+        override var time: Int,
         val channel: Int,
         val key: Int,
         val velocity: Int,
@@ -115,7 +115,7 @@ sealed class MidiVoiceMessage : MidiMessage {
     }
 
     data class KeyPressure(
-        override val time: Int,
+        override var time: Int,
         val channel: Int,
         val key: Int,
         val keyPressure: Int,
@@ -124,7 +124,7 @@ sealed class MidiVoiceMessage : MidiMessage {
     }
 
     data class ControlChange(
-        override val time: Int,
+        override var time: Int,
         val channel: Int,
         val control: Int,
         val controlValue: Int,
@@ -133,7 +133,7 @@ sealed class MidiVoiceMessage : MidiMessage {
     }
 
     data class ProgramChange(
-        override val time: Int,
+        override var time: Int,
         val channel: Int,
         val program: Int,
     ) : MidiVoiceMessage() {
@@ -141,7 +141,7 @@ sealed class MidiVoiceMessage : MidiMessage {
     }
 
     data class ChannelPressure(
-        override val time: Int,
+        override var time: Int,
         val channel: Int,
         val channelPressure: Int,
     ) : MidiVoiceMessage() {
@@ -149,7 +149,7 @@ sealed class MidiVoiceMessage : MidiMessage {
     }
 
     data class PitchBend(
-        override val time: Int,
+        override var time: Int,
         val channel: Int,
         val pitchBend: Int,
     ) : MidiVoiceMessage() {
@@ -159,5 +159,5 @@ sealed class MidiVoiceMessage : MidiMessage {
 
 data object UnsupportedMidiMessage : MidiMessage {
     override val type: MidiMessageType = MidiMessageType.UNSUPPORTED
-    override val time: Int = 0
+    override var time: Int = 0
 }

@@ -42,25 +42,21 @@ internal class MidiMetaMessageParser(
         )
     }
 
-    private fun parseSetTempo(deltaTime: Int, dataSize: Int): MidiMessage = skipMessage(dataSize)
-//    {
-//        if (dataSize != 3) {
-//            throw InvalidMidiDataException("Malformed MIDI. Set Tempo message must be 3 bytes long.")
-//        }
-//
-//        var tempoValue = 0
-//        repeat(dataSize) {
-//            buffer.readByte()
-//            tempoValue = tempoValue shl 8 or buffer.readByte().toInt()
-//        }
-//
-//        val bpm = 60_000_000 / tempoValue // 1 minute in microseconds / tempoValue
-//
-//        return MidiMetaMessage.SetTempo(
-//            time = deltaTime,
-//            bpm = bpm
-//        )
-//    }
+    private fun parseSetTempo(deltaTime: Int, dataSize: Int): MidiMetaMessage.SetTempo {
+        if (dataSize != 3) {
+            throw InvalidMidiDataException("Malformed MIDI. Set Tempo message must be 3 bytes long.")
+        }
+
+        var tempoValue = 0
+        repeat(dataSize) {
+            tempoValue = tempoValue shl 8 or buffer.readByte().toInt()
+        }
+
+        return MidiMetaMessage.SetTempo(
+            time = deltaTime,
+            tempo = tempoValue
+        )
+    }
 
     private fun skipMessage(dataSize: Int): MidiMessage {
         buffer.skip(dataSize.toLong())

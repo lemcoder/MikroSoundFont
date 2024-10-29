@@ -6,7 +6,6 @@ import pl.lemanski.mikroSoundFont.getLogger
 class MidiSequencer(
     private val soundFont: SoundFont,
     private val sampleRate: Int,
-    private val channelCount: Int,
     private val sampleBlockSize: Int
 ) {
     private val logger = getLogger()
@@ -39,19 +38,9 @@ class MidiSequencer(
         return audioBuffer
     }
 
-    private fun MidiMessage.process() {
-        type.let {
-            when (it) {
-                MidiMessageType.NOTE_OFF -> {
-                    (this as MidiVoiceMessage.NoteOff)
-                    soundFont.noteOff(channel, key)
-                }
-                MidiMessageType.NOTE_ON  -> {
-                    (this as MidiVoiceMessage.NoteOff)
-                    soundFont.noteOn(channel, key, velocity / 127.0f)
-                }
-                else                     -> logger.log("Unknown message type")
-            }
-        }
+    private fun MidiMessage.process() = when (this) {
+        is MidiVoiceMessage.NoteOff -> soundFont.noteOff(channel, key)
+        is MidiVoiceMessage.NoteOn  -> soundFont.noteOn(channel, key, velocity / 127.0f)
+        else                        -> logger.log("Unknown message type")
     }
 }

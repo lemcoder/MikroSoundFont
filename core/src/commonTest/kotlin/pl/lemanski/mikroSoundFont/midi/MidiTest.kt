@@ -14,7 +14,7 @@ class MidiTest {
 
     @Test
     fun testMidi() {
-        val midiFileBuffer = loadFile("$dir\\hbd.mid")
+        val midiFileBuffer = loadFile("$dir\\under.mid")
         val midiFile = MidiFileParser(midiFileBuffer).parse()
         val messages = midiFile.getMessagesOverTime()
 

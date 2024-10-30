@@ -1,6 +1,7 @@
 package pl.lemanski.mikroSoundFont.io.midi.message.read
 
 import kotlinx.io.Buffer
+import kotlinx.io.readUByte
 import pl.lemanski.mikroSoundFont.InvalidMidiDataException
 import pl.lemanski.mikroSoundFont.io.midi.message.readVarLen
 import pl.lemanski.mikroSoundFont.midi.MidiMessage
@@ -49,7 +50,7 @@ internal class MidiMetaMessageParser(
 
         var tempoValue = 0
         repeat(dataSize) {
-            tempoValue = tempoValue shl 8 or buffer.readByte().toInt()
+            tempoValue = tempoValue shl 8 or buffer.readUByte().toInt()
         }
 
         return MidiMetaMessage.SetTempo(

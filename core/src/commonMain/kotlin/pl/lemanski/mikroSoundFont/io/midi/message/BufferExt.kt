@@ -2,6 +2,7 @@ package pl.lemanski.mikroSoundFont.io.midi.message
 
 import kotlinx.io.Buffer
 import pl.lemanski.mikroSoundFont.InvalidMidiDataException
+import kotlin.experimental.or
 
 internal fun Buffer.readVarLen(): Int {
     var r = 0
@@ -19,4 +20,24 @@ internal fun Buffer.readVarLen(): Int {
     }
 
     return r
+}
+
+internal fun Buffer.writeVarLen(value: Int) {
+    var buffer = value
+    val byteStack = mutableListOf<Byte>()
+
+    do {
+        var byte = (buffer and 0x7F).toByte()
+        buffer = buffer shr 7
+
+        if (byteStack.isNotEmpty()) {
+            byte = (byte or 0x80.toByte())
+        }
+
+        byteStack.add(0, byte)
+    } while (buffer > 0)
+
+    for (b in byteStack) {
+        writeByte(b)
+    }
 }

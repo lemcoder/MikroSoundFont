@@ -10,7 +10,6 @@ import org.junit.Test
 import pl.lemanski.mikroSoundFont.MikroSoundFont
 import pl.lemanski.mikroSoundFont.io.midi.MidiFileParser
 import pl.lemanski.mikroSoundFont.io.saveFile
-import pl.lemanski.mikroSoundFont.io.toByteArrayBigEndian
 import pl.lemanski.mikroSoundFont.io.toByteArrayLittleEndian
 import pl.lemanski.mikroSoundFont.io.wav.WavFileHeader
 import pl.lemanski.mikroSoundFont.io.wav.toByteArray
@@ -30,13 +29,15 @@ class MidiTest {
         val path = "${Environment.getExternalStorageDirectory().absolutePath}/Download/"
 
         val midi = context.resources.assets.open("gmajor.mid")
+        val sf = context.resources.assets.open("font.sf2")
 
         val midiBuffer = midi.readBytes()
+        val sfBuffer = sf.readBytes()
 
         val midiFile = MidiFileParser(midiBuffer).parse()
         val messages = midiFile.getMessagesOverTime()
 
-        val soundFont = MikroSoundFont.load("$path/font.sf2")
+        val soundFont = MikroSoundFont.load(sfBuffer)
 
         val sequencer = MidiSequencer(soundFont, 44_100)
         sequencer.loadMidiEvents(messages)

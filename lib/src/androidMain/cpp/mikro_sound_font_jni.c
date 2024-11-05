@@ -105,36 +105,31 @@ JNIEXPORT jfloatArray JNICALL Java_pl_lemanski_mikroSoundFont_internal_SoundFont
 
 JNIEXPORT jboolean JNICALL
 Java_pl_lemanski_mikroSoundFont_internal_SoundFontDelegate_loadMemory(JNIEnv *env, jobject thiz, jbyteArray memory, jint size) {
-    // Get pointer to the memory array
     jbyte *memoryBuffer = (*env)->GetByteArrayElements(env, memory, NULL);
 
     if (g_tsf) {
-        tsf_close(g_tsf);  // Close the existing SoundFont if loaded
+        tsf_close(g_tsf);
     }
 
-    // Load the SoundFont from memory
     g_tsf = tsf_load_memory(memoryBuffer, size);
 
-    // Return true if the SoundFont was loaded successfully
+    (*env)->ReleaseByteArrayElements(env, memory, memoryBuffer, 0);
+
     return g_tsf != NULL ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_pl_lemanski_mikroSoundFont_internal_SoundFontDelegate_loadFilename(JNIEnv *env, jobject thiz, jstring path) {
-    // Convert the jstring path to a C-style string
     const char *filePath = (*env)->GetStringUTFChars(env, path, NULL);
 
     if (g_tsf) {
         tsf_close(g_tsf);  // Close the existing SoundFont if loaded
     }
 
-    // Load the SoundFont from the file
     g_tsf = tsf_load_filename(filePath);
 
-    // Release the C-style string
     (*env)->ReleaseStringUTFChars(env, path, filePath);
 
-    // Return true if the SoundFont was loaded successfully
     return g_tsf != NULL ? JNI_TRUE : JNI_FALSE;
 }
 

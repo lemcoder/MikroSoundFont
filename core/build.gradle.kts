@@ -10,6 +10,7 @@ android {
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     testOptions {
@@ -43,6 +44,11 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+
+        getByName("androidInstrumentedTest").dependencies {
+            implementation(libs.androidX.testRunner)
+            implementation(libs.test.rules)
         }
     }
 }

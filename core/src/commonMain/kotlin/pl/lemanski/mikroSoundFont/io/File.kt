@@ -16,7 +16,7 @@ fun loadFile(path: String): ByteArray {
 fun saveFile(byteArray: ByteArray, path: String) {
     val p = Path(path)
 
-    if (!SystemFileSystem.exists(p)) {
+    if (p.parent?.let { SystemFileSystem.exists(it) } == false) {
         SystemFileSystem.createDirectories(p)
     }
 

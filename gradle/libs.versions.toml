@@ -1,8 +1,10 @@
 [versions]
-agp = "8.7.1"
+agp = "8.7.2"
 kotlin = "2.0.20"
 kotlinxIo = "0.5.1"
-mikroaudio = "0.0.2"
+
+android-runner = "1.6.2"
+rules = "1.6.1"
 
 android-compileSdk = "34"
 android-minSdk = "24"
@@ -10,6 +12,8 @@ android-minSdk = "24"
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIo" }
+androidX-testRunner = { group = "androidx.test", name = "runner", version.ref = "android-runner" }
+test-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

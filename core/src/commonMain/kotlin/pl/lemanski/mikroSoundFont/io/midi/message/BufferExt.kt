@@ -12,9 +12,9 @@ internal fun Buffer.readVarLen(): Int {
         c = readByte().toInt() and 0xFF
         bytesRead++
         r = (r shl 7) or (c and 0x7F) // add 7 LSB of c to r
-    } while (c and 0x80 != 0 && bytesRead < 4) // until c MSB is 1
+    } while (c and 0x80 != 0 && bytesRead <= 4) // until c MSB is 1
 
-    if (bytesRead >= 4) {
+    if (bytesRead > 4) {
         throw InvalidMidiDataException("Malformed MIDI. Variable length quantity exceeds 32 bits.")
     }
 

@@ -88,14 +88,16 @@ JNIEXPORT void JNICALL Java_pl_lemanski_mikroSoundFont_internal_SoundFontDelegat
     }
 }
 
-// Render audio (this is a simplified example)
 JNIEXPORT jfloatArray JNICALL Java_pl_lemanski_mikroSoundFont_internal_SoundFontDelegate_renderFloat(JNIEnv *env, jobject obj, jint samples, jboolean isMixing) {
     if (g_tsf) {
-        float buffer[samples];
-        tsf_render_float(g_tsf, buffer, samples, isMixing);
+        int item_count = samples * 2;
+        float *buffer = malloc(item_count * sizeof(float) * 2);
+        tsf_render_float(g_tsf, buffer, samples, 0);
 
-        jfloatArray output = (*env)->NewFloatArray(env, samples);
-        (*env)->SetFloatArrayRegion(env, output, 0, samples, buffer);
+        jfloatArray output = (*env)->NewFloatArray(env, item_count);
+        (*env)->SetFloatArrayRegion(env, output, 0, item_count, buffer);
+        free(buffer);
+
         return output;
     }
     return NULL;
@@ -112,9 +114,6 @@ Java_pl_lemanski_mikroSoundFont_internal_SoundFontDelegate_loadMemory(JNIEnv *en
 
     // Load the SoundFont from memory
     g_tsf = tsf_load_memory(memoryBuffer, size);
-
-    // Release the memory array
-    (*env)->ReleaseByteArrayElements(env, memory, memoryBuffer, 0);
 
     // Return true if the SoundFont was loaded successfully
     return g_tsf != NULL ? JNI_TRUE : JNI_FALSE;
@@ -184,4 +183,136 @@ Java_pl_lemanski_mikroSoundFont_internal_SoundFontDelegate_bankGetPresetName(JNI
         }
     }
     return (*env)->NewStringUTF(env, "");  // Return empty string if not found
+}
+
+// ----------------
+// Channel methods
+// ----------------
+
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setPresetIndex(JNIEnv *env, jobject thiz, jint channel, jint preset_index) {
+    tsf_channel_set_presetindex(g_tsf, channel, preset_index);
+}
+
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setPresetNumber(JNIEnv *env, jobject thiz, jint channel, jint preset_number, jboolean is_midi_drums) {
+    tsf_channel_set_presetnumber(g_tsf, channel, preset_number, is_midi_drums);
+}
+
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setBank(JNIEnv *env, jobject thiz, jint channel, jint bank) {
+    tsf_channel_set_bank(g_tsf, channel, bank);
+}
+
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setBankPreset(JNIEnv *env, jobject thiz, jint channel, jint bank, jint preset_number) {
+    tsf_channel_set_bank_preset(g_tsf, channel, bank, preset_number);
+}
+
+// Set the pan (stereo position) for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setPan(JNIEnv *env, jobject thiz, jint channel, jfloat pan) {
+    tsf_channel_set_pan(g_tsf, channel, pan);
+}
+
+// Set the volume (gain) for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setVolume(JNIEnv *env, jobject thiz, jint channel, jfloat volume) {
+    tsf_channel_set_volume(g_tsf, channel, volume);
+}
+
+// Set the pitch wheel position for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setPitchWheel(JNIEnv *env, jobject thiz, jint channel, jint pitch_wheel) {
+    tsf_channel_set_pitchwheel(g_tsf, channel, pitch_wheel);
+}
+
+// Get the pitch wheel position for the channel
+JNIEXPORT jint JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getPitchWheel(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_pitchwheel(g_tsf, channel);
+}
+
+// Get the pitch range for the channel
+JNIEXPORT jfloat JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getPitchRange(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_pitchrange(g_tsf, channel);
+}
+
+// Get the tuning for the channel
+JNIEXPORT jfloat JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getTuning(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_tuning(g_tsf, channel);
+}
+
+// Set a MIDI control for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setMidiControl(JNIEnv *env, jobject thiz, jint channel, jint control, jint control_value) {
+    tsf_channel_midi_control(g_tsf, channel, control, control_value);
+}
+
+// Set the pitch range for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setPitchRange(JNIEnv *env, jobject thiz, jint channel, jfloat pitch_range) {
+    tsf_channel_set_pitchrange(g_tsf, channel, pitch_range);
+}
+
+// Set the tuning for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_setTuning(JNIEnv *env, jobject thiz, jint channel, jfloat tuning) {
+    tsf_channel_set_tuning(g_tsf, channel, tuning);
+}
+
+// Turn on a note for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_noteOn(JNIEnv *env, jobject thiz, jint channel, jint key, jfloat velocity) {
+    tsf_channel_note_on(g_tsf, channel, key, velocity);
+}
+
+// Turn off a note for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_noteOff(JNIEnv *env, jobject thiz, jint channel, jint key) {
+    tsf_channel_note_off(g_tsf, channel, key);
+}
+
+// Turn off all notes for the channel
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_noteOffAll(JNIEnv *env, jobject thiz, jint channel) {
+    tsf_channel_note_off_all(g_tsf, channel);
+}
+
+// Turn off all sounds for the channel (includes sustained notes)
+JNIEXPORT void JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_soundsOffAll(JNIEnv *env, jobject thiz, jint channel) {
+    tsf_channel_sounds_off_all(g_tsf, channel);
+}
+
+// Get the preset index for the channel
+JNIEXPORT jint JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getPresetIndex(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_preset_index(g_tsf, channel);
+}
+
+// Get the preset bank for the channel
+JNIEXPORT jint JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getPresetBank(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_preset_bank(g_tsf, channel);
+}
+
+// Get the preset number for the channel
+JNIEXPORT jint JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getPresetNumber(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_preset_number(g_tsf, channel);
+}
+
+// Get the pan (stereo position) for the channel
+JNIEXPORT jfloat JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getPan(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_pan(g_tsf, channel);
+}
+
+// Get the volume (gain) for the channel
+JNIEXPORT jfloat JNICALL
+Java_pl_lemanski_mikroSoundFont_internal_ChannelDelegate_getVolume(JNIEnv *env, jobject thiz, jint channel) {
+    return tsf_channel_get_volume(g_tsf, channel);
 }

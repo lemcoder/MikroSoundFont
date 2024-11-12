@@ -6,4 +6,4 @@
 * Mingw64
 * iOS
 
-Library for reading and writing MIDI files. 
+Library for reading and writing MIDI files. Can also generate F32 sound data using TinySoundFont[https://github.com/schellingb/TinySoundFont]

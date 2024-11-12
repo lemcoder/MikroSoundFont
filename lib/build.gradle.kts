@@ -6,12 +6,8 @@ import pl.lemanski.plugin.KonanPluginExtension
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    id("maven-publish")
     id("pl.lemanski.plugin")
 }
-
-group = "pl.lemanski.mikrosoundfont"
-version = "0.0.2"
 
 android {
     namespace = "pl.lemanski.mikrosoundfont"
@@ -60,12 +56,6 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-    }
-}
-
-publishing {
-    repositories {
-        mavenLocal()
     }
 }
 

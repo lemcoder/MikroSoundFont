@@ -3,7 +3,11 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    id("maven-publish")
 }
+
+group = "pl.lemanski.mikrosoundfont"
+version = "0.1.3"
 
 android {
     namespace = "pl.lemanski.mikroSoundFont.core"
@@ -50,5 +54,11 @@ kotlin {
             implementation(libs.androidX.testRunner)
             implementation(libs.test.rules)
         }
+    }
+}
+
+publishing {
+    repositories {
+        mavenLocal()
     }
 }

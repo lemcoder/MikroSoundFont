@@ -28,7 +28,7 @@ kotlin {
     jvmToolchain(17)
 
     androidTarget().apply {
-        publishAllLibraryVariants()
+        publishLibraryVariants("release")
     }
 
     mingwX64()

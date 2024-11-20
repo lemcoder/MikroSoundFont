@@ -7,7 +7,11 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     id("pl.lemanski.plugin")
+    id("maven-publish")
 }
+
+group = "pl.lemanski.mikrosoundfont"
+version = libs.versions.midi.get().toString()
 
 android {
     namespace = "pl.lemanski.mikrosoundfont"
@@ -33,8 +37,6 @@ kotlin {
     listOf(
         mingwX64(),
         linuxX64()
-
-
     ).forEach { target ->
         target.apply {
             val main by compilations.getting
@@ -56,6 +58,12 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+    }
+}
+
+publishing {
+    repositories {
+        mavenLocal()
     }
 }
 

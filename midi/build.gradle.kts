@@ -7,10 +7,10 @@ plugins {
 }
 
 group = "pl.lemanski.mikrosoundfont"
-version = "0.1.3"
+version = libs.versions.midi.get().toString()
 
 android {
-    namespace = "pl.lemanski.mikroSoundFont.core"
+    namespace = "pl.lemanski.mikroSoundFont"
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -42,7 +42,7 @@ kotlin {
     sourceSets {
 
         commonMain.dependencies {
-            implementation(projects.lib)
+            implementation(projects.soundFont)
             implementation(libs.kotlinx.io)
         }
 

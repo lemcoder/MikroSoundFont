@@ -17,5 +17,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MikroSoundFont"
-include(":core")
-include(":lib")
+include(":midi")
+include(":soundFont")

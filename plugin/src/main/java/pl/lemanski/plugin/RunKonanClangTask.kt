@@ -2,7 +2,6 @@ package pl.lemanski.plugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.file.RegularFileProperty
@@ -15,7 +14,6 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity.NAME_ONLY
 import org.gradle.api.tasks.PathSensitivity.RELATIVE
@@ -37,9 +35,9 @@ abstract class RunKonanClangTask @Inject constructor(
 ) : DefaultTask() {
 
     /** Destination of compiled `.o` object files */
-    @get:OutputDirectory
-    val outputDir: Provider<Directory>
-        get() = objects.directoryProperty().fileValue(temporaryDir.resolve("output"))
+    @get:InputFiles
+    @get:PathSensitive(RELATIVE)
+    abstract val outputDir: DirectoryProperty
 
     /** C and C++ source files to compile to object files */
     @get:InputFiles
@@ -58,7 +56,7 @@ abstract class RunKonanClangTask @Inject constructor(
 
     /** Kotlin target platform, e.g. `mingw_x64` */
     @get:Input
-    abstract val kotlinTarget: Property<KonanTarget>
+    abstract val targets: ListProperty<KonanTarget>
 
     @get:Input
     @get:Optional
@@ -67,60 +65,119 @@ abstract class RunKonanClangTask @Inject constructor(
     @get:Internal
     abstract val workingDir: DirectoryProperty
 
+    @get:Input
+    abstract val libName: Property<String>
+
+    private val libFileName: Provider<String>
+        get() = libName.map { "lib${it}.a" }
+
     @TaskAction
-    fun compile() {
+    fun compileAndLink() {
         val workingDir = workingDir.asFile.getOrElse(temporaryDir)
-        val kotlinTarget = kotlinTarget.get()
+        targets.get().forEach { kotlinTarget ->
+            // prepare output dirs
+            val sourcesDir = workingDir.resolve("sources")
+            val headersDir = workingDir.resolve("headers")
+            val compileDir = workingDir.resolve("compile")
+            val linkDir = workingDir.resolve("link")
 
-        // prepare output dirs
-        val sourcesDir = workingDir.resolve("sources")
-        val headersDir = workingDir.resolve("headers")
-        val compileDir = workingDir.resolve("compile")
-
-        fs.sync {
-            from(sourceFiles)
-            into(sourcesDir)
-        }
-        fs.sync {
-            from(includeDirs)
-            into(headersDir)
-        }
-        fs.delete { delete(compileDir) }
-        compileDir.mkdirs()
-
-        // prepare args file
-        val sourceFilePaths = sourcesDir.walk()
-            .filter { it.extension in listOf("cpp", "c") }
-            .joinToString("\n") { it.invariantSeparatorsPath }
-
-        compileDir.resolve("args").writeText(/*language=text*/ """
-          |--include-directory ${headersDir.invariantSeparatorsPath}
-          |${arguments.getOrElse(emptyList()).joinToString("\n")}
-          |-c $sourceFilePaths
-        """.trimMargin()
-        )
-
-        // compile files
-        val compileResult = exec.execCapture {
-            executable(runKonan.asFile.get())
-            args(
-                parseSpaceSeparatedArgs(
-                    "clang clang $kotlinTarget @args"
-                )
-            )
-            workingDir(compileDir)
-        }
-
-        // verify output
-        logger.lifecycle(compileResult.output)
-        compileResult.assertNormalExitValue()
-
-        // move compiled files to output directory
-        fs.sync {
-            from(compileDir) {
-                include("**/*.o")
+            fs.sync {
+                from(sourceFiles)
+                into(sourcesDir)
             }
-            into(outputDir)
+
+            fs.sync {
+                from(includeDirs)
+                into(headersDir)
+            }
+
+            fs.delete { delete(compileDir) }
+            compileDir.mkdirs()
+
+            fs.delete { delete(linkDir) }
+            linkDir.mkdirs()
+
+            // ---
+            // Compiling
+
+            // prepare args file
+            val sourceFilePaths = sourcesDir.walk()
+                .filter { it.extension in listOf("cpp", "c") }
+                .joinToString("\n") { it.invariantSeparatorsPath }
+
+            compileDir.resolve("args")
+                .writeText(/*language=text*/
+                    """
+                    |--include-directory ${headersDir.invariantSeparatorsPath}
+                    |${arguments.getOrElse(emptyList()).joinToString("\n")}
+                    |-c $sourceFilePaths
+                    """.trimMargin()
+                )
+
+            // compile files
+            val compileResult = exec.execCapture {
+                executable(runKonan.asFile.get())
+                args(
+                    parseSpaceSeparatedArgs(
+                        "clang clang $kotlinTarget @args"
+                    )
+                )
+                workingDir(compileDir)
+            }
+
+            // verify output
+            logger.lifecycle(compileResult.output)
+            compileResult.assertNormalExitValue()
+
+            // move compiled files to output directory
+            val outDir = outputDir.get().dir(kotlinTarget.name)
+            fs.delete { delete(outDir) }
+            fs.sync {
+                from(compileDir) {
+                    include("**/*.o")
+                }
+                into(outDir)
+            }
+
+            // ---
+            // Linking
+
+            val objFilesPaths = outDir
+                .asFileTree
+                .matching { include("**/*.o") }
+                .joinToString("\n") { it.invariantSeparatorsPath }
+
+            linkDir.resolve("args")
+                .writeText(
+                /*language=text*/ """
+                    |-rv
+                    |${libFileName.get()}
+                    |$objFilesPaths
+                    """.trimMargin()
+                )
+
+            // link files
+            val linkResult = exec.execCapture {
+                executable(runKonan.asFile.get())
+                args(
+                    parseSpaceSeparatedArgs(
+                        "llvm llvm-ar @args"
+                    )
+                )
+                workingDir(linkDir)
+            }
+
+            logger.lifecycle(linkResult.output)
+            linkResult.assertNormalExitValue()
+
+            fs.delete { delete(outDir) }
+            fs.sync {
+                from(linkDir) {
+                    include("**/*.a")
+                }
+                into(outDir)
+            }
+
         }
     }
 }

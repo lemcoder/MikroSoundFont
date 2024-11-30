@@ -42,8 +42,8 @@ To add library to Your project paste the following snippet in your TOML file.
 mikrosoundfont = "<latest_version>"
 
 [libraries]
-mikrosoundfont-midi = { module = "pl.lemanski.mikrosoundfont:midi", version.ref = "mikrosoundfont" }  
-mikrosoundfont-soundFont = { module = "pl.lemanski.mikrosoundfont:soundFont", version.ref = "mikrosoundfont" }
+mikrosoundfont-midi = { module = "io.github.lemcoder.mikroSoundFont:midi", version.ref = "mikrosoundfont" }  
+mikrosoundfont-soundFont = { module = "io.github.lemcoder.mikroSoundFont:soundFont", version.ref = "mikrosoundfont" }
 ```
 ___
 ### Usage

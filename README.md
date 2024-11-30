@@ -1,6 +1,6 @@
 
 ## Kotlin Multiplatform SoundFont library
-[![Kotlin](https://img.shields.io/badge/kotlin-2.0.21-blue.svg?logo=kotlin)](http://kotlinlang.org)  
+[![Kotlin](https://img.shields.io/badge/kotlin-2.1.0-blue.svg?logo=kotlin)](http://kotlinlang.org)  
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 >:warning: This library is NOT ready for production use.:warning:
 
@@ -18,32 +18,21 @@ Non goals:
 
 
 Platform support:
-| Android |iOS | Mingw X64 | Linux X64 |
-|--|--|--|--|
-| :heavy_check_mark: | :hourglass: | :heavy_check_mark: | :heavy_check_mark: |
-
-
-
-
-___
-### Features
-This library is in early stage. Full set of features as well as documentation is yet to be released.
-
-
+| Android |iOS | Mingw X64 | Linux X64 | MacOs | Wasm | JS |
+|--|--|--|--|--|--|--|
+|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:hourglass:|:heavy_multiplication_x:|
 
 ___
 ### Installation
->:warning: This library is not YET available on Maven Central :warning:
-> For now use the `msf.zip` file provided in [releases](https://github.com/lemcoder/MikroSoundFont/releases/) and unpack it in [local maven repository](https://www.baeldung.com/maven-local-repository).
 
-To add library to Your project paste the following snippet in your TOML file.
+This library is stored on Maven Central repository. To add library to Your project paste the following snippet in your TOML file.
 ```
 [versions]
 mikrosoundfont = "<latest_version>"
 
 [libraries]
-mikrosoundfont-midi = { module = "io.github.lemcoder.mikroSoundFont:midi", version.ref = "mikrosoundfont" }  
-mikrosoundfont-soundFont = { module = "io.github.lemcoder.mikroSoundFont:soundFont", version.ref = "mikrosoundfont" }
+mikrosoundfont-midi = { module = "io.github.lemcoder.mikrosoundfont:midi", version.ref = "mikrosoundfont" }  
+mikrosoundfont-soundFont = { module = "io.github.lemcoder.mikrosoundfont:soundFont", version.ref = "mikrosoundfont" }
 ```
 ___
 ### Usage
@@ -62,7 +51,10 @@ val audioBytes = MidiSequencer(soundFont, 44_100).apply {
 // use audioBytes (e.g. write to .wav file)
 ```
 
-___
+## License
+
+This project is licensed under the Apache 2.0 License - see the [LICENSE.md](LICENSE.md) file for details
+
 
 ### Useful resources:
 * [Sandard MIDI files specification](https://drive.google.com/file/d/1t4jcCCKoi5HMi7YJ6skvZfKcefLhhOgU/view?u)

@@ -8,11 +8,11 @@ plugins {
     signing
 }
 
-group = "io.github.lemcoder.mikroSoundFont"
+group = "io.github.lemcoder.mikrosoundfont"
 version = libs.versions.lib.get().toString()
 
 android {
-    namespace = "io.github.lemcoder.mikroSoundFont"
+    namespace = "io.github.lemcoder.mikrosoundfont"
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()

@@ -32,7 +32,7 @@ mikrosoundfont = "<latest_version>"
 
 [libraries]
 mikrosoundfont-midi = { module = "io.github.lemcoder.mikrosoundfont:midi", version.ref = "mikrosoundfont" }  
-mikrosoundfont-soundFont = { module = "io.github.lemcoder.mikrosoundfont:soundFont", version.ref = "mikrosoundfont" }
+mikrosoundfont-soundfont = { module = "io.github.lemcoder.mikrosoundfont:soundfont", version.ref = "mikrosoundfont" }
 ```
 ___
 ### Usage

@@ -1,7 +1,7 @@
 [versions]
 lib = "0.1.7"
 
-agp = "8.7.2"
+agp = "8.7.3"
 kotlin = "2.1.0"
 kotlinxIo = "0.5.4"
 

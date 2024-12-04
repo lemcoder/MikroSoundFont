@@ -1,12 +1,15 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.konan.target.KonanTarget
+import org.jetbrains.kotlin.konan.util.DependencyDirectories.localKonanDir
+import io.github.lemcoder.KonanPluginExtension
 
-// import pl.lemanski.plugin.KonanPluginExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.maven.publish)
-    // id("pl.lemanski.plugin")
+    alias(libs.plugins.konan.plugin)
     signing
 }
 
@@ -37,20 +40,22 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-    listOf(
-        mingwX64(),
-        linuxX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-        iosX64(),
-        macosArm64(),
-        macosX64()
-    ).forEach { target ->
+    buildList {
+        add(mingwX64())
+        add(linuxX64())
+        if (System.getProperty("os.name").lowercase().contains("mac")) {
+            add(iosArm64())
+            add(iosSimulatorArm64())
+            add(iosX64())
+            add(macosArm64())
+            add(macosX64())
+        }
+    }.forEach { target ->
         target.apply {
             val main by compilations.getting
 
             main.cinterops.create("libtsf") {
-                definitionFile = File(rootDir, "native/libtsf.def")
+                definitionFile = File(rootDir, "native${s}libtsf.def")
                 includeDirs.headerFilterOnly("$rootDir${s}native${s}include")
                 extraOpts("-libraryPath", "$rootDir${s}native${s}lib${s}${target.konanTarget.name}")
             }
@@ -68,27 +73,26 @@ kotlin {
     }
 }
 
-//configure<KonanPluginExtension> {
-//    targets = buildList {
-//        add(KonanTarget.LINUX_X64)
-//        add(KonanTarget.MINGW_X64)
-//        if (System.getProperty("os.name").lowercase().contains("mac")) {
-//            add(KonanTarget.IOS_ARM64)
-//            add(KonanTarget.IOS_SIMULATOR_ARM64)
-//            add(KonanTarget.IOS_X64)
-//            add(KonanTarget.MACOS_X64)
-//            add(KonanTarget.MACOS_ARM64)
-//        }
-//    }
-//    sourceDir = "${rootDir}/native/src"
-//    headerDir = "${rootDir}/native/include"
-//    outputDir = "${rootDir}/native/lib"
-//    libName = "tsf"
-//    konanPath = localKonanDir.listFiles()?.first {
-//        print(it.name)
-//        it.name.contains(libs.versions.kotlin.get())
-//    }?.absolutePath
-//}
+configure<KonanPluginExtension> {
+    targets = buildList {
+        add(KonanTarget.LINUX_X64)
+        add(KonanTarget.MINGW_X64)
+        if (System.getProperty("os.name").lowercase().contains("mac")) {
+            add(KonanTarget.IOS_ARM64)
+            add(KonanTarget.IOS_SIMULATOR_ARM64)
+            add(KonanTarget.IOS_X64)
+            add(KonanTarget.MACOS_X64)
+            add(KonanTarget.MACOS_ARM64)
+        }
+    }
+    sourceDir = "${rootDir}/native/src"
+    headerDir = "${rootDir}/native/include"
+    outputDir = "${rootDir}/native/lib"
+    libName = "tsf"
+    konanPath = localKonanDir.listFiles()?.first {
+        it.name.contains(libs.versions.kotlin.get())
+    }?.absolutePath
+}
 
 // Publishing
 

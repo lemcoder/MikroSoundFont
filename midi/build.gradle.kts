@@ -33,20 +33,17 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-    listOf(
-        mingwX64(),
-        linuxX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-        iosX64(),
-        macosArm64(),
-        macosX64()
-    )
-    iosArm64()
-    iosSimulatorArm64()
-    iosX64()
-    macosArm64()
-    macosX64()
+    buildList {
+        add(mingwX64())
+        add(linuxX64())
+        if (System.getProperty("os.name").lowercase().contains("mac")) {
+            add(iosArm64())
+            add(iosSimulatorArm64())
+            add(iosX64())
+            add(macosArm64())
+            add(macosX64())
+        }
+    }
 
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
@@ -55,7 +52,7 @@ kotlin {
     sourceSets {
 
         commonMain.dependencies {
-            implementation(projects.soundfont)
+//            implementation(projects.soundfont)
             implementation(libs.kotlinx.io)
         }
 

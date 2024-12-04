@@ -1,7 +1,7 @@
 [versions]
 lib = "0.1.7"
 
-agp = "8.7.3"
+agp = "8.7.1"
 kotlin = "2.1.0"
 kotlinxIo = "0.5.4"
 
@@ -11,6 +11,7 @@ rules = "1.6.1"
 android-compileSdk = "34"
 android-minSdk = "24"
 maven-publish = "0.28.0"
+konanplugin = "1.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -22,3 +23,4 @@ test-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+konan-plugin = { id = "io.github.lemcoder.konanplugin", version.ref = "konanplugin" }

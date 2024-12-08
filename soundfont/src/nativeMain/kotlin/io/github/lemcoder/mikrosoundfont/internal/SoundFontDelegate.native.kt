@@ -90,7 +90,6 @@ internal class SoundFontDelegate : SoundFont {
                 SoundFont.OutputMode.TSF_STEREO_UNWEAVED    -> TSFOutputMode.TSF_STEREO_UNWEAVED
                 SoundFont.OutputMode.TSF_MONO               -> TSFOutputMode.TSF_MONO
             }
-            tsf_set_output(it.reinterpret(), tsfMode, sampleRate, globalGainDb)
         }
     }
 
@@ -148,9 +147,9 @@ internal class SoundFontDelegate : SoundFont {
         }
     }
 
-    override fun renderFloat(samples: Int, isMixing: Boolean): FloatArray {
+    override fun renderFloat(samples: Int, channels: Int, isMixing: Boolean): FloatArray {
         return withSoundFont {
-            val buffer = FloatArray(samples * 2)
+            val buffer = FloatArray(samples * channels)
             val flagMixing = if (isMixing) 1 else 0
             tsf_render_float(it.reinterpret(), buffer.refTo(0), samples, flagMixing)
             buffer

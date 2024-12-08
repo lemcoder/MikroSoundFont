@@ -106,7 +106,7 @@ interface SoundFont {
      * Render output samples in F32 format
      * @param isMixing: if false clear the buffer first, otherwise mix into existing data
      */
-    fun renderFloat(samples: Int, isMixing: Boolean): FloatArray
+    fun renderFloat(samples: Int, channels: Int, isMixing: Boolean): FloatArray
 
     /**
      * Supported output modes by the render methods

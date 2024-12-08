@@ -1,5 +1,5 @@
 [versions]
-lib = "0.1.7"
+lib = "0.1.8"
 
 agp = "8.7.3"
 kotlin = "2.1.0"

@@ -47,5 +47,5 @@ internal class SoundFontDelegate : SoundFont {
     external override fun noteOffAll()
     external override fun activeVoiceCount(): Int
     external override fun setBankPreset(channel: Int, bank: Int, presetNumber: Int)
-    external override fun renderFloat(samples: Int, isMixing: Boolean): FloatArray
+    external override fun renderFloat(samples: Int, channels: Int, isMixing: Boolean): FloatArray
 }

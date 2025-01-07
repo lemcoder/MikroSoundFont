@@ -91,8 +91,8 @@ JNIEXPORT void JNICALL Java_io_github_lemcoder_mikrosoundfont_internal_SoundFont
 JNIEXPORT jfloatArray JNICALL Java_io_github_lemcoder_mikrosoundfont_internal_SoundFontDelegate_renderFloat(JNIEnv *env, jobject obj, jint samples, jint channels, jboolean isMixing) {
     if (g_tsf) {
         int item_count = samples * channels;
-        float *buffer = malloc(item_count * sizeof(float) * channels);
-        tsf_render_float(g_tsf, buffer, samples, 0);
+        float *buffer = malloc(item_count * sizeof(float));
+        tsf_render_float(g_tsf, buffer, samples, isMixing ? 1 : 0);
 
         jfloatArray output = (*env)->NewFloatArray(env, item_count);
         (*env)->SetFloatArrayRegion(env, output, 0, item_count, buffer);

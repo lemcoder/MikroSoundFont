@@ -1,13 +1,15 @@
 package io.github.lemcoder.mikrosoundfont.internal
 
+import io.github.lemcoder.mikrosoundfont.Channel
+import io.github.lemcoder.mikrosoundfont.SoundFont
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.refTo
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKString
-import io.github.lemcoder.mikrosoundfont.Channel
-import io.github.lemcoder.mikrosoundfont.SoundFont
+import platform.posix.malloc
 import tinySoundFont.TSFOutputMode
 import tinySoundFont.tsf_active_voice_count
 import tinySoundFont.tsf_bank_get_presetname
@@ -87,9 +89,11 @@ internal class SoundFontDelegate : SoundFont {
         return withSoundFont {
             val tsfMode = when (outputMode) {
                 SoundFont.OutputMode.TSF_STEREO_INTERLEAVED -> TSFOutputMode.TSF_STEREO_INTERLEAVED
-                SoundFont.OutputMode.TSF_STEREO_UNWEAVED    -> TSFOutputMode.TSF_STEREO_UNWEAVED
-                SoundFont.OutputMode.TSF_MONO               -> TSFOutputMode.TSF_MONO
+                SoundFont.OutputMode.TSF_STEREO_UNWEAVED -> TSFOutputMode.TSF_STEREO_UNWEAVED
+                SoundFont.OutputMode.TSF_MONO -> TSFOutputMode.TSF_MONO
             }
+
+            tsf_set_output(it.reinterpret(), tsfMode, sampleRate, globalGainDb)
         }
     }
 
@@ -149,13 +153,28 @@ internal class SoundFontDelegate : SoundFont {
 
     override fun renderFloat(samples: Int, channels: Int, isMixing: Boolean): FloatArray {
         return withSoundFont {
-            val buffer = FloatArray(samples * channels)
-            val flagMixing = if (isMixing) 1 else 0
-            tsf_render_float(it.reinterpret(), buffer.refTo(0), samples, flagMixing)
-            buffer
+            memScoped {
+                val buffer = malloc((samples * channels * Float.SIZE_BYTES).toULong()) ?: return@withSoundFont floatArrayOf()
+                val flagMixing = if (isMixing) 1 else 0
+                tsf_render_float(it.reinterpret(), buffer.reinterpret(), samples, flagMixing)
+
+                val bytes = buffer.readBytes(samples * channels * Float.SIZE_BYTES)
+
+                bytes.toFloatArray()
+            }
         }
     }
 
     private fun <T> withSoundFont(block: (soundFont: CPointer<*>) -> T): T =
         this.soundFont.let(block) ?: throw IllegalStateException("SoundFont not loaded")
+
+    private fun ByteArray.toFloatArray(): FloatArray {
+        return FloatArray(size / Float.SIZE_BYTES) { index ->
+            val intBits = (this[index * Float.SIZE_BYTES].toInt() and 0xFF) or
+                    ((this[index * Float.SIZE_BYTES + 1].toInt() and 0xFF) shl 8) or
+                    ((this[index * Float.SIZE_BYTES + 2].toInt() and 0xFF) shl 16) or
+                    ((this[index * Float.SIZE_BYTES + 3].toInt() and 0xFF) shl 24)
+            Float.fromBits(intBits)
+        }
+    }
 }

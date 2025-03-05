@@ -11,11 +11,11 @@ Library for [sample-based synthesis](https://en.wikipedia.org/wiki/Sample-based_
 The goal of this library is to allow operations on MIDI files and generating audio in Kotlin Multiplatform projects. The library has `batteries-included` so no configuration is required.
 
 Non goals:
+* <b>Audio playback</b>
 * Audio file export (such as WAV or MP3)
-* Base File I/O operations
+* File I/O operations
 * Audio format conversion
 * Resampling, mixing etc...
-
 
 Platform support:
 | Android |iOS | Mingw X64 | Linux X64 | MacOs | Wasm | JS |

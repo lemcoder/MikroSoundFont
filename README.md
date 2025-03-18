@@ -3,7 +3,7 @@
 [![Kotlin](https://img.shields.io/badge/kotlin-2.1.0-blue.svg?logo=kotlin)](http://kotlinlang.org)  
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
-Library for [sample-based synthesis](https://en.wikipedia.org/wiki/Sample-based_synthesis "Sample-based synthesis") to generate audio data from [MIDI](https://en.wikipedia.org/wiki/MIDI "MIDI") files. 
+Library for [sample-based synthesis](https://en.wikipedia.org/wiki/Sample-based_synthesis "Sample-based synthesis") to generate audio data. 
 The library allows to load `.sf2` files from filesystem and from memory. Is basically a KMP wrapper around [TinySoundFont](https://github.com/schellingb/TinySoundFont) library.
 
 The goal of this library is to allow operations on .sf2 files and generating audio in Kotlin Multiplatform projects. 

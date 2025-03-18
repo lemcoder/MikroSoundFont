@@ -88,9 +88,9 @@ internal class SoundFontDelegate : SoundFont {
     override fun setOutput(outputMode: SoundFont.OutputMode, sampleRate: Int, globalGainDb: Float) {
         return withSoundFont {
             val tsfMode = when (outputMode) {
-                SoundFont.OutputMode.TSF_STEREO_INTERLEAVED -> TSFOutputMode.TSF_STEREO_INTERLEAVED
-                SoundFont.OutputMode.TSF_STEREO_UNWEAVED -> TSFOutputMode.TSF_STEREO_UNWEAVED
-                SoundFont.OutputMode.TSF_MONO -> TSFOutputMode.TSF_MONO
+                SoundFont.OutputMode.STEREO_INTERLEAVED -> TSFOutputMode.TSF_STEREO_INTERLEAVED
+                SoundFont.OutputMode.STEREO_UNWEAVED -> TSFOutputMode.TSF_STEREO_UNWEAVED
+                SoundFont.OutputMode.MONO            -> TSFOutputMode.TSF_MONO
             }
 
             tsf_set_output(it.reinterpret(), tsfMode, sampleRate, globalGainDb)

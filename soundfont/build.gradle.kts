@@ -13,10 +13,9 @@ plugins {
 }
 
 val s: String = File.separator
-val v: String = libs.versions.lib.get().toString()
 
 group = "io.github.lemcoder.mikrosoundfont"
-version = v
+version = libs.versions.lib.get()
 
 android {
     namespace = "io.github.lemcoder.mikrosoundfont"

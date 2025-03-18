@@ -38,4 +38,3 @@ jobs:
         run: |
           chmod 777 ./gradlew
           ./gradlew soundfont:publishAndReleaseToMavenCentral --no-configuration-cache
-          ./gradlew midi:publishAndReleaseToMavenCentral --no-configuration-cache

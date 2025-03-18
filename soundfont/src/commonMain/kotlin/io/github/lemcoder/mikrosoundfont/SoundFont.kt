@@ -1,5 +1,8 @@
 package io.github.lemcoder.mikrosoundfont
 
+/**
+ * This class represents a soundfont.
+ */
 interface SoundFont {
     val channels: List<Channel>
 
@@ -115,16 +118,16 @@ interface SoundFont {
         /**
          * Two channels with single left/right samples one after another
          */
-        TSF_STEREO_INTERLEAVED,
+        STEREO_INTERLEAVED,
 
         /**
          * Two channels with all samples for the left channel first then right
          */
-        TSF_STEREO_UNWEAVED,
+        STEREO_UNWEAVED,
 
         /**
          * A single channel (stereo instruments are mixed into center)
          */
-        TSF_MONO
+        MONO
     }
 }

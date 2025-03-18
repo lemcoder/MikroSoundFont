@@ -38,6 +38,8 @@ ___
 val sfBuffer   // .sf2 file bytes
     
 val soundFont = MikroSoundFont.load(sfBuffer)
+
+.. use soundFont to generate audio data
 ```
 
 ## License

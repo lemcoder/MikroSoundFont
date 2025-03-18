@@ -1,12 +1,8 @@
 [versions]
-lib = "1.0.0"
+lib = "0.3.0"
 
 agp = "8.7.3"
 kotlin = "2.1.10"
-kotlinxIo = "0.7.0"
-
-android-runner = "1.6.2"
-rules = "1.6.1"
 
 android-compileSdk = "35"
 android-minSdk = "24"
@@ -15,9 +11,6 @@ konanplugin = "1.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIo" }
-androidX-testRunner = { group = "androidx.test", name = "runner", version.ref = "android-runner" }
-test-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

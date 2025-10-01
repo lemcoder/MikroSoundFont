@@ -1,0 +1,25 @@
+name: Sync secrets to other repos
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync secrets
+        uses: jpoehnelt/secrets-sync-action@v1
+        with:
+          # regex matching secret names you want to sync
+          SECRETS: |
+            ^MAVEN_CENTRAL_     # will match MAVEN_CENTRAL_USERNAME & _PASSWORD
+            ^PUBLIC_KEY$
+            ^SIGNING_KEY$
+            ^SIGNING_KEY_ID$
+            ^SIGNING_KEY_PASSWORD$
+          # repositories — either explicit names or regexes
+          REPOSITORIES: |
+            ^myorg/target-repo-1$
+            ^myorg/target-repo-2$
+        env:
+          # Store a PAT with the required permissions in the source repo as a secret
+          GITHUB_TOKEN: ${{ secrets.SYNC_TOKEN }}

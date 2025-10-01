@@ -9,6 +9,7 @@ jobs:
       - name: Sync secrets
         uses: jpoehnelt/secrets-sync-action@v1.10.0
         with:
+          GITHUB_TOKEN: ${{ secrets.SYNC_TOKEN }}
           # regex matching secret names you want to sync
           SECRETS: |
             ^MAVEN_CENTRAL_     # will match MAVEN_CENTRAL_USERNAME & _PASSWORD
@@ -19,6 +20,3 @@ jobs:
           # repositories — either explicit names or regexes
           REPOSITORIES: |
             ^lemcoder/acra-github
-        env:
-          # Store a PAT with the required permissions in the source repo as a secret
-          GITHUB_TOKEN: ${{ secrets.SYNC_TOKEN }}

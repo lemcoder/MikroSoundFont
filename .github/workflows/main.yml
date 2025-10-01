@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Sync secrets
-        uses: jpoehnelt/secrets-sync-action@v1
+        uses: jpoehnelt/secrets-sync-action@v1.10.0
         with:
           # regex matching secret names you want to sync
           SECRETS: |

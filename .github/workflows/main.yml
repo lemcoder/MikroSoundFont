@@ -18,8 +18,7 @@ jobs:
             ^SIGNING_KEY_PASSWORD$
           # repositories — either explicit names or regexes
           REPOSITORIES: |
-            ^myorg/target-repo-1$
-            ^myorg/target-repo-2$
+            ^lemcoder/acra-github
         env:
           # Store a PAT with the required permissions in the source repo as a secret
           GITHUB_TOKEN: ${{ secrets.SYNC_TOKEN }}

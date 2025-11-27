@@ -19,7 +19,7 @@ jobs:
             ^SIGNING_KEY_PASSWORD$
           # repositories — either explicit names or regexes
           REPOSITORIES: |
-            ^lemcoder/acra-github
+            ^lemcoder/koog-edge
         env:
           # Pass the actual secrets from *this* repo into process.env
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}

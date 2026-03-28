@@ -26,3 +26,5 @@ target_link_libraries(
         mikroSoundFontJNI
         ${log-lib}
 )
+
+target_link_options(mikroSoundFontJNI PRIVATE "-Wl,-z,max-page-size=16384")

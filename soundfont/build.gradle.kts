@@ -138,13 +138,14 @@ mavenPublishing {
     }
 }
 
-// Sign with default plugin
+// Sign with default plugin (only when signing env vars are present)
 signing {
-    useInMemoryPgpKeys(
-        System.getenv("SIGNING_KEY"),
-        System.getenv("SIGNING_KEY_PASSWORD")
-    )
-    sign(publishing.publications)
+    val signingKey = System.getenv("SIGNING_KEY")
+    val signingPassword = System.getenv("SIGNING_KEY_PASSWORD")
+    if (signingKey != null && signingPassword != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications)
+    }
 
     // Temporary workaround, see https://github.com/gradle/gradle/issues/26091#issuecomment-1722947958
     tasks.withType<AbstractPublishToMaven>().configureEach {

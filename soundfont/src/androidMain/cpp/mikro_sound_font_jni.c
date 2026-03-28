@@ -1,7 +1,7 @@
 #include <jni.h>
 
 #define TSF_IMPLEMENTATION
-
+#include "stb_vorbis.c"
 #include "tsf.h"
 
 // Declare global tsf (TinySoundFont) object

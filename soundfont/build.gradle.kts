@@ -66,15 +66,6 @@ konan {
     }
 }
 
-// The konan plugin runs the Kotlin/Native distribution KGP downloads; on a fresh machine (CI) make sure
-// it is there before anything of the plugin's runs.
-tasks.matching { it.name.startsWith("generateJni") || it.name.startsWith("konanClang") || it.name.startsWith("linkJni") }
-    .configureEach { dependsOn("downloadKotlinNativeDistribution") }
-
-// The generated JNI bindings reach androidMain without their producer, so the published sources jar
-// would read them before generation.
-tasks.matching { it.name == "androidSourcesJar" }.configureEach { dependsOn("generateJniTsf") }
-
 // Publishing
 
 publishing {

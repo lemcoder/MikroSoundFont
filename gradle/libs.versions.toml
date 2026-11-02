@@ -6,6 +6,8 @@ kotlin = "2.1.10"
 
 android-compileSdk = "35"
 android-minSdk = "24"
+# NDK r28+ aligns native libraries to 16 KB pages by default
+android-ndk = "28.2.13676358"
 maven-publish = "0.30.0"
 konanplugin = "1.0.0"
 

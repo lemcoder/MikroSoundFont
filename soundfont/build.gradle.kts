@@ -71,6 +71,10 @@ konan {
 tasks.matching { it.name.startsWith("generateJni") || it.name.startsWith("konanClang") || it.name.startsWith("linkJni") }
     .configureEach { dependsOn("downloadKotlinNativeDistribution") }
 
+// The generated JNI bindings reach androidMain without their producer, so the published sources jar
+// would read them before generation.
+tasks.matching { it.name == "androidSourcesJar" }.configureEach { dependsOn("generateJniTsf") }
+
 // Publishing
 
 publishing {

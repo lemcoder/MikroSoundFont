@@ -26,3 +26,11 @@ target_link_libraries(
         mikroSoundFontJNI
         ${log-lib}
 )
+
+# Align ELF LOAD segments to 16 KB so the library works on devices with 16 KB page sizes
+# (required by Google Play for apps targeting Android 15+). See https://developer.android.com/16kb-page-size
+target_link_options(
+        mikroSoundFontJNI
+        PRIVATE
+        "-Wl,-z,max-page-size=16384"
+)

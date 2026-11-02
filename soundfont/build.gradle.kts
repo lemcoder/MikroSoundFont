@@ -22,6 +22,13 @@ android {
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        externalNativeBuild {
+            cmake {
+                // Build native libraries with 16 KB page size support
+                arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+            }
+        }
     }
 
     externalNativeBuild {

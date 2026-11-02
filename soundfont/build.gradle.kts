@@ -19,6 +19,7 @@ version = libs.versions.lib.get()
 
 android {
     namespace = "io.github.lemcoder.mikrosoundfont"
+    ndkVersion = libs.versions.android.ndk.get()
     defaultConfig {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()

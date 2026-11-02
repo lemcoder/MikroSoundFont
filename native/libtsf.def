@@ -1,4 +1,3 @@
 package = tinySoundFont
 headerFilter = "tsf/*"
 headers = tsf/tsfCInterop.h
-staticLibraries = libtsf.a

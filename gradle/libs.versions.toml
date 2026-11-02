@@ -1,21 +1,19 @@
 [versions]
 lib = "0.3.1"
 
-agp = "8.7.3"
-kotlin = "2.1.10"
+agp = "9.3.1"
+kotlin = "2.4.21"
 
-android-compileSdk = "35"
+android-compileSdk = "36"
 android-minSdk = "24"
-# NDK r28+ aligns native libraries to 16 KB pages by default
-android-ndk = "28.2.13676358"
-maven-publish = "0.30.0"
-konanplugin = "1.0.0"
+maven-publish = "0.37.0"
+konanplugin = "2.0.0-alpha03"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 konan-plugin = { id = "io.github.lemcoder.konanplugin", version.ref = "konanplugin" }

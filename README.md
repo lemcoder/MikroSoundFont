@@ -17,7 +17,7 @@ Non goals:
 * Resampling, mixing etc...
 
 Platform support:
-| Android |iOS | Mingw X64 | Linux X64 | MacOs | Wasm | JS |
+| Android |iOS | Mingw X64 | Linux X64 | MacOs (Apple silicon) | Wasm | JS |
 |--|--|--|--|--|--|--|
 |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:hourglass:|:heavy_multiplication_x:|
 

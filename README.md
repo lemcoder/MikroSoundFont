@@ -37,10 +37,12 @@ ___
 ```
 val sfBuffer   // .sf2 file bytes
     
-val soundFont = MikroSoundFont.load(sfBuffer)
-
-.. use soundFont to generate audio data
+MikroSoundFont.load(sfBuffer).use { soundFont ->
+    // .. use soundFont to generate audio data
+}
 ```
+
+A `SoundFont` holds its samples in native memory until `close()` is called, so close it (or load it in `use { }`) when you are done with it.
 
 ## License
 

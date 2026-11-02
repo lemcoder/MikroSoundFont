@@ -28,13 +28,15 @@ import tinySoundFont.tsf_channel_sounds_off_all
 internal actual fun getChannelDelegate(
     number: Int,
     soundFont: SoundFont
-): Channel = ChannelDelegate(number, (soundFont as SoundFontDelegate).soundFont)
+): Channel = ChannelDelegate(number, soundFont as SoundFontDelegate)
 
 internal class ChannelDelegate(
     override val number: Int,
-    /** The native `tsf*` of the SoundFont this channel belongs to. */
-    private val soundFont: Long,
+    private val owner: SoundFontDelegate,
 ) : Channel {
+    /** The owner's native `tsf*`, read per call so that a closed SoundFont throws. */
+    private val soundFont: Long get() = owner.soundFont
+
     override fun setPresetIndex(presetIndex: Int) {
         tsf_channel_set_presetindex(soundFont, number, presetIndex)
     }

@@ -2,9 +2,17 @@ package io.github.lemcoder.mikrosoundfont
 
 /**
  * This class represents a soundfont.
+ *
+ * A loaded soundfont holds its samples in native memory: [close] it when done, e.g. with `use { }`.
+ * Calling it, or any of its [channels], after [close] throws [IllegalStateException].
  */
-interface SoundFont {
+interface SoundFont : AutoCloseable {
     val channels: List<Channel>
+
+    /**
+     * Free the native memory of this soundfont. Calling it again does nothing.
+     */
+    override fun close()
 
     /**
      * Stop all playing notes immediately and reset all channel parameters

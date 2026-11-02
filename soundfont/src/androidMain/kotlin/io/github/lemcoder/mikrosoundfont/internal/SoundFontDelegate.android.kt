@@ -11,6 +11,7 @@ import tinySoundFont.tsf_bank_get_presetname
 import tinySoundFont.tsf_bank_note_off
 import tinySoundFont.tsf_bank_note_on
 import tinySoundFont.tsf_channel_set_bank_preset
+import tinySoundFont.tsf_close
 import tinySoundFont.tsf_get_presetcount
 import tinySoundFont.tsf_get_presetindex
 import tinySoundFont.tsf_get_presetname
@@ -30,12 +31,16 @@ internal actual fun getSoundFontDelegate(path: String): SoundFont = SoundFontDel
 internal actual fun getSoundFontDelegate(memory: ByteArray): SoundFont = SoundFontDelegate(memory)
 
 internal class SoundFontDelegate : SoundFont {
-    /** The native `tsf*`. */
-    internal val soundFont: Long
+    /** The native `tsf*`; 0 once closed. */
+    private var handle: Long
     override val channels: List<Channel>
 
+    /** The native `tsf*`, checked: a closed SoundFont's would be freed memory. */
+    internal val soundFont: Long
+        get() = handle.takeIf { it != 0L } ?: throw IllegalStateException("SoundFont closed")
+
     constructor(path: String) {
-        this.soundFont = tsf_load_filename(path).takeIf { it != 0L }
+        this.handle = tsf_load_filename(path).takeIf { it != 0L }
             ?: throw IllegalStateException("SoundFont not loaded")
         this.channels = (0..getPresetsCount()).map { getChannelDelegate(it, this) }
     }
@@ -43,9 +48,14 @@ internal class SoundFontDelegate : SoundFont {
     constructor(memory: ByteArray) {
         // tsf_load_memory takes a void*, which crosses JNI as a direct buffer; TinySoundFont copies what it needs.
         val buffer = ByteBuffer.allocateDirect(memory.size).put(memory)
-        this.soundFont = tsf_load_memory(buffer, memory.size).takeIf { it != 0L }
+        this.handle = tsf_load_memory(buffer, memory.size).takeIf { it != 0L }
             ?: throw IllegalStateException("SoundFont not loaded")
         this.channels = (0..getPresetsCount()).map { getChannelDelegate(it, this) }
+    }
+
+    override fun close() {
+        if (handle != 0L) tsf_close(handle)
+        handle = 0L
     }
 
     override fun reset() = tsf_reset(soundFont)

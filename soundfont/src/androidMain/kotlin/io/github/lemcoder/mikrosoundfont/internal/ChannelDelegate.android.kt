@@ -2,6 +2,7 @@ package io.github.lemcoder.mikrosoundfont.internal
 
 import io.github.lemcoder.mikrosoundfont.Channel
 import io.github.lemcoder.mikrosoundfont.SoundFont
+import tinySoundFont.TsfPointer
 import tinySoundFont.tsf_channel_get_pan
 import tinySoundFont.tsf_channel_get_pitchrange
 import tinySoundFont.tsf_channel_get_pitchwheel
@@ -35,7 +36,7 @@ internal class ChannelDelegate(
     private val owner: SoundFontDelegate,
 ) : Channel {
     /** The owner's native `tsf*`, read per call so that a closed SoundFont throws. */
-    private val soundFont: Long get() = owner.soundFont
+    private val soundFont: TsfPointer get() = owner.soundFont
 
     override fun setPresetIndex(presetIndex: Int) {
         tsf_channel_set_presetindex(soundFont, number, presetIndex)

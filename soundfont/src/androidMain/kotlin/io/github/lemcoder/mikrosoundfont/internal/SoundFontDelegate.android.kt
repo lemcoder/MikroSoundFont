@@ -3,6 +3,7 @@ package io.github.lemcoder.mikrosoundfont.internal
 import io.github.lemcoder.mikrosoundfont.Channel
 import io.github.lemcoder.mikrosoundfont.SoundFont
 import java.nio.ByteBuffer
+import tinySoundFont.TsfPointer
 import tinySoundFont.TSF_MONO
 import tinySoundFont.TSF_STEREO_INTERLEAVED
 import tinySoundFont.TSF_STEREO_UNWEAVED
@@ -31,16 +32,16 @@ internal actual fun getSoundFontDelegate(path: String): SoundFont = SoundFontDel
 internal actual fun getSoundFontDelegate(memory: ByteArray): SoundFont = SoundFontDelegate(memory)
 
 internal class SoundFontDelegate : SoundFont {
-    /** The native `tsf*`; 0 once closed. */
-    private var handle: Long
+    /** The native `tsf*`; null once closed. */
+    private var handle: TsfPointer?
     override val channels: List<Channel>
 
     /** The native `tsf*`, checked: a closed SoundFont's would be freed memory. */
-    internal val soundFont: Long
-        get() = handle.takeIf { it != 0L } ?: throw IllegalStateException("SoundFont closed")
+    internal val soundFont: TsfPointer
+        get() = handle ?: throw IllegalStateException("SoundFont closed")
 
     constructor(path: String) {
-        this.handle = tsf_load_filename(path).takeIf { it != 0L }
+        this.handle = tsf_load_filename(path)
             ?: throw IllegalStateException("SoundFont not loaded")
         this.channels = (0..getPresetsCount()).map { getChannelDelegate(it, this) }
     }
@@ -48,14 +49,14 @@ internal class SoundFontDelegate : SoundFont {
     constructor(memory: ByteArray) {
         // tsf_load_memory takes a void*, which crosses JNI as a direct buffer; TinySoundFont copies what it needs.
         val buffer = ByteBuffer.allocateDirect(memory.size).put(memory)
-        this.handle = tsf_load_memory(buffer, memory.size).takeIf { it != 0L }
+        this.handle = tsf_load_memory(buffer, memory.size)
             ?: throw IllegalStateException("SoundFont not loaded")
         this.channels = (0..getPresetsCount()).map { getChannelDelegate(it, this) }
     }
 
     override fun close() {
-        if (handle != 0L) tsf_close(handle)
-        handle = 0L
+        handle?.let(::tsf_close)
+        handle = null
     }
 
     override fun reset() = tsf_reset(soundFont)

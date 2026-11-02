@@ -7,7 +7,7 @@ kotlin = "2.4.21"
 android-compileSdk = "36"
 android-minSdk = "24"
 maven-publish = "0.37.0"
-konanplugin = "2.0.0-alpha04"
+konanplugin = "2.0.0-alpha05"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

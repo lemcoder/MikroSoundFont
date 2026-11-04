@@ -22,8 +22,11 @@ jobs:
           echo "$SIGNING_KEY" | gpg --dearmor > ${HOME}/secring.gpg
 
       - name: Install Android NDK
-        # The NDK the Android Gradle plugin uses, which builds every Android native library
-        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;28.2.13676358"
+        # Runners preset ANDROID_NDK_HOME to an older NDK, which KonanPlugin prefers over the Android
+        # Gradle plugin's; point it at NDK 28, whose linker aligns to 16 KB pages by default.
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;28.2.13676358" > /dev/null
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -32,6 +35,11 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+
+      - name: Check 16 KB page alignment
+        run: |
+          ./gradlew --no-configuration-cache :soundfont:bundleAndroidMainAar
+          scripts/check-16kb-alignment.sh soundfont/build/outputs/aar/soundfont.aar
 
       - name: Publish To Maven Central
         env:

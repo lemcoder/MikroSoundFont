@@ -1,6 +1,7 @@
 import io.github.lemcoder.kotlin.of
 import io.github.lemcoder.model.NativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -22,6 +23,11 @@ kotlin {
         namespace = "io.github.lemcoder.mikrosoundfont"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        // commonTest also runs on a connected device: ./gradlew :soundfont:connectedAndroidDeviceTest
+        withDeviceTestBuilder { sourceSetTreeName = "test" }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
 
     mingwX64()
@@ -40,6 +46,12 @@ kotlin {
     sourceSets {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+        getByName("androidDeviceTest") {
+            resources.srcDir("src/commonTest/resources")
+            dependencies {
+                implementation(libs.androidx.test.runner)
+            }
         }
     }
 }
@@ -64,6 +76,11 @@ konan {
             library(tsf)
         }
     }
+}
+
+// The native test binaries read their fixtures from here (see readTestResource)
+tasks.withType<KotlinNativeTest>().configureEach {
+    environment("MIKROSOUNDFONT_TEST_RESOURCES", file("src/commonTest/resources").absolutePath)
 }
 
 // Publishing

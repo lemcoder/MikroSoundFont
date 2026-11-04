@@ -55,6 +55,12 @@ interface Channel {
      */
     fun setTuning(tuning: Float)
 
+    /**
+     * Hold or release the sustain pedal (MIDI CC 64). While held, [noteOff] keeps notes sounding;
+     * releasing it ends the notes that were held.
+     */
+    fun setSustain(isSustained: Boolean)
+
 
     /**
      * Start playing a note

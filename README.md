@@ -4,7 +4,7 @@
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Library for [sample-based synthesis](https://en.wikipedia.org/wiki/Sample-based_synthesis "Sample-based synthesis") to generate audio data. 
-The library allows to load `.sf2` files from memory. Is basically a KMP wrapper around [TinySoundFont](https://github.com/schellingb/TinySoundFont) library.
+The library allows to load `.sf2` and `.sf3` files from memory. Is basically a KMP wrapper around [TinySoundFont](https://github.com/schellingb/TinySoundFont) library.
 
 The goal of this library is to allow operations on .sf2 files and generating audio in Kotlin Multiplatform projects. 
 The library has `batteries-included` so no configuration is required.
@@ -35,7 +35,7 @@ mikrosoundfont = { module = "io.github.lemcoder.mikrosoundfont:soundfont", versi
 ___
 ### Usage
 ```
-val sfBuffer   // .sf2 file bytes
+val sfBuffer   // .sf2 or .sf3 file bytes
     
 MikroSoundFont.load(sfBuffer).use { soundFont ->
     // .. use soundFont to generate audio data
@@ -43,6 +43,19 @@ MikroSoundFont.load(sfBuffer).use { soundFont ->
 ```
 
 A `SoundFont` holds its samples in native memory until `close()` is called, so close it (or load it in `use { }`) when you are done with it.
+
+#### SF3 files
+`.sf3` files store their samples compressed with Ogg Vorbis. `load` decodes all of them up front, so:
+* loading takes noticeably longer than an `.sf2` of the same size (seconds for a large font on a phone), so load off the main thread;
+* the loaded `SoundFont` takes several times the file size in memory, as the samples are kept decoded.
+
+Decoding uses [stb_vorbis](https://github.com/nothings/stb), which is not hardened against malformed data, so only load `.sf3` files you trust.
+
+## Testing
+
+The tests in `soundfont/src/commonTest` load an `.sf2` and an `.sf3` font and render audio through the native library:
+* `./gradlew :soundfont:linuxX64Test` or `:soundfont:macosArm64Test` runs them on the host (CI runs the Linux ones on every pull request);
+* `./gradlew :soundfont:connectedAndroidDeviceTest` runs them on a connected Android device or emulator.
 
 ## License
 

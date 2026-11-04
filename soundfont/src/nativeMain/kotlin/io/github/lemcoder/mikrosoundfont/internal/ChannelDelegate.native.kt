@@ -25,6 +25,7 @@ import tinySoundFont.tsf_channel_set_pitchwheel
 import tinySoundFont.tsf_channel_set_presetindex
 import tinySoundFont.tsf_channel_set_presetnumber
 import tinySoundFont.tsf_channel_set_tuning
+import tinySoundFont.tsf_channel_set_sustain
 import tinySoundFont.tsf_channel_set_volume
 import tinySoundFont.tsf_channel_sounds_off_all
 
@@ -95,6 +96,12 @@ internal class ChannelDelegate(
     override fun setTuning(tuning: Float) {
         withSoundFont {
             tsf_channel_set_tuning(it.reinterpret(), number, tuning)
+        }
+    }
+
+    override fun setSustain(isSustained: Boolean) {
+        withSoundFont {
+            tsf_channel_set_sustain(it.reinterpret(), number, if (isSustained) 1 else 0)
         }
     }
 

@@ -2,102 +2,105 @@ package io.github.lemcoder.mikrosoundfont.internal
 
 import io.github.lemcoder.mikrosoundfont.Channel
 import io.github.lemcoder.mikrosoundfont.SoundFont
+import tinySoundFont.TsfPointer
+import tinySoundFont.tsf_channel_get_pan
+import tinySoundFont.tsf_channel_get_pitchrange
+import tinySoundFont.tsf_channel_get_pitchwheel
+import tinySoundFont.tsf_channel_get_preset_bank
+import tinySoundFont.tsf_channel_get_preset_index
+import tinySoundFont.tsf_channel_get_preset_number
+import tinySoundFont.tsf_channel_get_tuning
+import tinySoundFont.tsf_channel_get_volume
+import tinySoundFont.tsf_channel_midi_control
+import tinySoundFont.tsf_channel_note_off
+import tinySoundFont.tsf_channel_note_off_all
+import tinySoundFont.tsf_channel_note_on
+import tinySoundFont.tsf_channel_set_bank
+import tinySoundFont.tsf_channel_set_bank_preset
+import tinySoundFont.tsf_channel_set_pan
+import tinySoundFont.tsf_channel_set_pitchrange
+import tinySoundFont.tsf_channel_set_pitchwheel
+import tinySoundFont.tsf_channel_set_presetindex
+import tinySoundFont.tsf_channel_set_presetnumber
+import tinySoundFont.tsf_channel_set_tuning
+import tinySoundFont.tsf_channel_set_volume
+import tinySoundFont.tsf_channel_sounds_off_all
 
 internal actual fun getChannelDelegate(
     number: Int,
     soundFont: SoundFont
-): Channel = ChannelDelegate(number)
+): Channel = ChannelDelegate(number, soundFont as SoundFontDelegate)
 
 internal class ChannelDelegate(
     override val number: Int,
+    private val owner: SoundFontDelegate,
 ) : Channel {
-    override fun setPresetIndex(presetIndex: Int) = setPresetIndex(number, presetIndex)
+    /** The owner's native `tsf*`, read per call so that a closed SoundFont throws. */
+    private val soundFont: TsfPointer get() = owner.soundFont
 
-    override fun setPresetNumber(presetNumber: Int, isMidiDrums: Boolean) = setPresetNumber(number, presetNumber, isMidiDrums)
+    override fun setPresetIndex(presetIndex: Int) {
+        tsf_channel_set_presetindex(soundFont, number, presetIndex)
+    }
 
-    override fun setBank(bank: Int) = setBank(number, bank)
+    override fun setPresetNumber(presetNumber: Int, isMidiDrums: Boolean) {
+        tsf_channel_set_presetnumber(soundFont, number, presetNumber, if (isMidiDrums) 1 else 0)
+    }
 
-    override fun setBankPreset(bank: Int, presetNumber: Int) = setBankPreset(number, bank, presetNumber)
+    override fun setBank(bank: Int) {
+        tsf_channel_set_bank(soundFont, number, bank)
+    }
 
-    override fun setPan(pan: Float) = setPan(number, pan)
+    override fun setBankPreset(bank: Int, presetNumber: Int) {
+        tsf_channel_set_bank_preset(soundFont, number, bank, presetNumber)
+    }
 
-    override fun setVolume(volume: Float) = setVolume(number, volume)
+    override fun setPan(pan: Float) {
+        tsf_channel_set_pan(soundFont, number, pan)
+    }
 
-    override fun setPitchWheel(pitchWheel: Int) = setPitchWheel(number, pitchWheel)
+    override fun setVolume(volume: Float) {
+        tsf_channel_set_volume(soundFont, number, volume)
+    }
 
-    override fun setPitchRange(pitchRange: Float) = setPitchRange(number, pitchRange)
+    override fun setPitchWheel(pitchWheel: Int) {
+        tsf_channel_set_pitchwheel(soundFont, number, pitchWheel)
+    }
 
-    override fun setTuning(tuning: Float) = setTuning(number, tuning)
+    override fun setPitchRange(pitchRange: Float) {
+        tsf_channel_set_pitchrange(soundFont, number, pitchRange)
+    }
 
-    override fun noteOn(key: Int, velocity: Float) = noteOn(number, key, velocity)
+    override fun setTuning(tuning: Float) {
+        tsf_channel_set_tuning(soundFont, number, tuning)
+    }
 
-    override fun noteOff(key: Int) = noteOff(number, key)
+    override fun noteOn(key: Int, velocity: Float) {
+        tsf_channel_note_on(soundFont, number, key, velocity)
+    }
 
-    override fun noteOffAll() = noteOffAll(number)
+    override fun noteOff(key: Int) = tsf_channel_note_off(soundFont, number, key)
 
-    override fun soundsOffAll() = soundsOffAll(number)
+    override fun noteOffAll() = tsf_channel_note_off_all(soundFont, number)
 
-    override fun getPresetIndex(): Int = getPresetIndex(number)
+    override fun soundsOffAll() = tsf_channel_sounds_off_all(soundFont, number)
 
-    override fun getPresetBank(): Int = getPresetBank(number)
+    override fun getPresetIndex(): Int = tsf_channel_get_preset_index(soundFont, number)
 
-    override fun getPresetNumber(): Int = getPresetNumber(number)
+    override fun getPresetBank(): Int = tsf_channel_get_preset_bank(soundFont, number)
 
-    override fun getPan(): Float = getPan(number)
+    override fun getPresetNumber(): Int = tsf_channel_get_preset_number(soundFont, number)
 
-    override fun getVolume(): Float = getVolume(number)
+    override fun getPan(): Float = tsf_channel_get_pan(soundFont, number)
 
-    override fun getPitchWheel(): Int = getPitchWheel(number)
+    override fun getVolume(): Float = tsf_channel_get_volume(soundFont, number)
 
-    override fun getPitchRange(): Float = getPitchRange(number)
+    override fun getPitchWheel(): Int = tsf_channel_get_pitchwheel(soundFont, number)
 
-    override fun getTuning(): Float = getTuning(number)
+    override fun getPitchRange(): Float = tsf_channel_get_pitchrange(soundFont, number)
 
-    override fun setMidiControl(control: Int, controlValue: Int) = setMidiControl(number, control, controlValue)
+    override fun getTuning(): Float = tsf_channel_get_tuning(soundFont, number)
 
-    // ---
-
-    private external fun setPresetIndex(channel: Int, presetIndex: Int)
-
-    private external fun setPresetNumber(channel: Int, presetNumber: Int, isMidiDrums: Boolean)
-
-    private external fun setBank(channel: Int, bank: Int)
-
-    private external fun setBankPreset(channel: Int, bank: Int, presetNumber: Int)
-
-    private external fun setPan(channel: Int, pan: Float)
-
-    private external fun setVolume(channel: Int, volume: Float)
-
-    private external fun setPitchWheel(channel: Int, pitchWheel: Int)
-
-    private external fun getPitchWheel(number: Int): Int
-
-    private external fun getPitchRange(number: Int): Float
-
-    private external fun getTuning(number: Int): Float
-
-    private external fun setMidiControl(number: Int, control: Int, controlValue: Int)
-
-    private external fun setPitchRange(number: Int, pitchRange: Float)
-
-    private external fun setTuning(number: Int, tuning: Float)
-
-    private external fun noteOn(number: Int, key: Int, velocity: Float)
-
-    private external fun noteOff(number: Int, key: Int)
-
-    private external fun noteOffAll(number: Int)
-
-    private external fun soundsOffAll(number: Int)
-
-    private external fun getPresetIndex(number: Int): Int
-
-    private external fun getPresetBank(number: Int): Int
-
-    private external fun getPresetNumber(number: Int): Int
-
-    private external fun getPan(number: Int): Float
-
-    private external fun getVolume(number: Int): Float
+    override fun setMidiControl(control: Int, controlValue: Int) {
+        tsf_channel_midi_control(soundFont, number, control, controlValue)
+    }
 }

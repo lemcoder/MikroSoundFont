@@ -4,18 +4,21 @@ import io.github.lemcoder.mikrosoundfont.Channel
 import io.github.lemcoder.mikrosoundfont.SoundFont
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.FloatVar
+import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.get
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKString
-import platform.posix.malloc
+import kotlinx.cinterop.value
 import tinySoundFont.TSFOutputMode
 import tinySoundFont.tsf_active_voice_count
 import tinySoundFont.tsf_bank_get_presetname
 import tinySoundFont.tsf_bank_note_off
 import tinySoundFont.tsf_bank_note_on
 import tinySoundFont.tsf_channel_set_bank_preset
+import tinySoundFont.tsf_close
 import tinySoundFont.tsf_get_presetcount
 import tinySoundFont.tsf_get_presetindex
 import tinySoundFont.tsf_get_presetname
@@ -36,19 +39,29 @@ internal actual fun getSoundFontDelegate(memory: ByteArray): SoundFont = SoundFo
 
 @OptIn(ExperimentalForeignApi::class)
 internal class SoundFontDelegate : SoundFont {
-    internal val soundFont: CPointer<*>
+    /** The native `tsf*`; null once closed. */
+    private var pointer: CPointer<*>?
     override val channels: List<Channel>
 
+    /** The native `tsf*`, checked: a closed SoundFont's would be freed memory. */
+    internal val soundFont: CPointer<*>
+        get() = pointer ?: throw IllegalStateException("SoundFont closed")
+
     constructor(path: String) {
-        this.soundFont =
+        this.pointer =
             tsf_load_filename(path) ?: throw IllegalStateException("SoundFont not loaded")
         this.channels = (0..getPresetsCount()).map { getChannelDelegate(it, this) }
     }
 
     constructor(memory: ByteArray) {
-        this.soundFont = tsf_load_memory(memory.toCValues(), memory.size)
+        this.pointer = tsf_load_memory(memory.toCValues(), memory.size)
             ?: throw IllegalStateException("SoundFont not loaded")
         this.channels = (0..getPresetsCount()).map { getChannelDelegate(it, this) }
+    }
+
+    override fun close() {
+        pointer?.let { tsf_close(it.reinterpret()) }
+        pointer = null
     }
 
     override fun reset() {
@@ -153,28 +166,15 @@ internal class SoundFontDelegate : SoundFont {
 
     override fun renderFloat(samples: Int, channels: Int, isMixing: Boolean): FloatArray {
         return withSoundFont {
+            // Freed when the scope ends. Zeroed, so mixing into it matches Android's fresh FloatArray.
             memScoped {
-                val buffer = malloc((samples * channels * Float.SIZE_BYTES).toULong()) ?: return@withSoundFont floatArrayOf()
-                val flagMixing = if (isMixing) 1 else 0
-                tsf_render_float(it.reinterpret(), buffer.reinterpret(), samples, flagMixing)
-
-                val bytes = buffer.readBytes(samples * channels * Float.SIZE_BYTES)
-
-                bytes.toFloatArray()
+                val count = samples * channels
+                val buffer = allocArray<FloatVar>(count) { value = 0f }
+                tsf_render_float(it.reinterpret(), buffer, samples, if (isMixing) 1 else 0)
+                FloatArray(count) { index -> buffer[index] }
             }
         }
     }
 
-    private fun <T> withSoundFont(block: (soundFont: CPointer<*>) -> T): T =
-        this.soundFont.let(block) ?: throw IllegalStateException("SoundFont not loaded")
-
-    private fun ByteArray.toFloatArray(): FloatArray {
-        return FloatArray(size / Float.SIZE_BYTES) { index ->
-            val intBits = (this[index * Float.SIZE_BYTES].toInt() and 0xFF) or
-                    ((this[index * Float.SIZE_BYTES + 1].toInt() and 0xFF) shl 8) or
-                    ((this[index * Float.SIZE_BYTES + 2].toInt() and 0xFF) shl 16) or
-                    ((this[index * Float.SIZE_BYTES + 3].toInt() and 0xFF) shl 24)
-            Float.fromBits(intBits)
-        }
-    }
+    private fun <T> withSoundFont(block: (soundFont: CPointer<*>) -> T): T = block(soundFont)
 }

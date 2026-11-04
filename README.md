@@ -17,7 +17,7 @@ Non goals:
 * Resampling, mixing etc...
 
 Platform support:
-| Android |iOS | Mingw X64 | Linux X64 | MacOs | Wasm | JS |
+| Android |iOS | Mingw X64 | Linux X64 | MacOs (Apple silicon) | Wasm | JS |
 |--|--|--|--|--|--|--|
 |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:hourglass:|:heavy_multiplication_x:|
 
@@ -37,10 +37,12 @@ ___
 ```
 val sfBuffer   // .sf2 file bytes
     
-val soundFont = MikroSoundFont.load(sfBuffer)
-
-.. use soundFont to generate audio data
+MikroSoundFont.load(sfBuffer).use { soundFont ->
+    // .. use soundFont to generate audio data
+}
 ```
+
+A `SoundFont` holds its samples in native memory until `close()` is called, so close it (or load it in `use { }`) when you are done with it.
 
 ## License
 

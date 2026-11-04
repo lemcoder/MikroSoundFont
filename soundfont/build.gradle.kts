@@ -1,64 +1,36 @@
-import com.vanniktech.maven.publish.SonatypeHost
-import org.jetbrains.kotlin.konan.target.KonanTarget
-import org.jetbrains.kotlin.konan.util.DependencyDirectories.localKonanDir
-import io.github.lemcoder.KonanPluginExtension
-
+import io.github.lemcoder.kotlin.of
+import io.github.lemcoder.model.NativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKmpLibrary)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.konan.plugin)
     signing
 }
 
-val s: String = File.separator
-
 group = "io.github.lemcoder.mikrosoundfont"
 version = libs.versions.lib.get()
 
-android {
-    namespace = "io.github.lemcoder.mikrosoundfont"
-    ndkVersion = libs.versions.android.ndk.get()
-    defaultConfig {
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    externalNativeBuild {
-        cmake {
-            path = file("src/androidMain/cpp/CMakeLists.txt")
-        }
-    }
-}
+val isMacHost = System.getProperty("os.name").lowercase().contains("mac")
 
 kotlin {
     jvmToolchain(17)
 
-    androidTarget().apply {
-        publishLibraryVariants("release")
+    android {
+        namespace = "io.github.lemcoder.mikrosoundfont"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
-    buildList {
-        add(mingwX64())
-        add(linuxX64())
-        if (System.getProperty("os.name").lowercase().contains("mac")) {
-            add(iosArm64())
-            add(iosSimulatorArm64())
-            add(iosX64())
-            add(macosArm64())
-            add(macosX64())
-        }
-    }.forEach { target ->
-        target.apply {
-            val main by compilations.getting
-
-            main.cinterops.create("libtsf") {
-                definitionFile = File(rootDir, "native${s}libtsf.def")
-                includeDirs.headerFilterOnly("$rootDir${s}native${s}include")
-                extraOpts("-libraryPath", "$rootDir${s}native${s}lib${s}${target.konanTarget.name}")
-            }
-        }
+    mingwX64()
+    linuxX64()
+    if (isMacHost) {
+        iosArm64()
+        iosSimulatorArm64()
+        iosX64()
+        macosArm64()
     }
 
     compilerOptions {
@@ -72,25 +44,26 @@ kotlin {
     }
 }
 
-configure<KonanPluginExtension> {
-    targets = buildList {
-        add(KonanTarget.LINUX_X64)
-        add(KonanTarget.MINGW_X64)
-        if (System.getProperty("os.name").lowercase().contains("mac")) {
-            add(KonanTarget.IOS_ARM64)
-            add(KonanTarget.IOS_SIMULATOR_ARM64)
-            add(KonanTarget.IOS_X64)
-            add(KonanTarget.MACOS_X64)
-            add(KonanTarget.MACOS_ARM64)
+konan {
+    config { konanHome.set(kotlinNativeDistribution()) }
+
+    // TinySoundFont (native/src/tsf.c), built for every Kotlin/Native target and every Android ABI.
+    val tsf = libraries.create("tsf") {
+        sourceDirectory.set(rootProject.layout.projectDirectory.dir("native/src"))
+        targets.set(
+            kotlin.targets.withType<KotlinNativeTarget>().map { NativeTarget.of(it.konanTarget) } +
+                NativeTarget.android
+        )
+    }
+
+    // One binding for both sides: KGP's cinterop on Kotlin/Native, generated JNI bindings on Android.
+    bindings {
+        create("tsf") {
+            defFile.set(rootProject.file("native/libtsf.def"))
+            includeDirs.from(rootProject.file("native/include"))
+            library(tsf)
         }
     }
-    sourceDir = "${rootDir}/native/src"
-    headerDir = "${rootDir}/native/include"
-    outputDir = "${rootDir}/native/lib"
-    libName = "tsf"
-    konanPath = localKonanDir.listFiles()?.first {
-        it.name.contains(libs.versions.kotlin.get())
-    }?.absolutePath
 }
 
 // Publishing
@@ -102,15 +75,13 @@ publishing {
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
 
     coordinates(
         groupId = group.toString(),
         artifactId = "soundfont",
         version = version.toString()
     )
-
-    println(SonatypeHost.DEFAULT.toString())
 
     pom {
         name.set("MikroSoundFont")

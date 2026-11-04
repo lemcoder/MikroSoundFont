@@ -21,7 +21,7 @@
 
    LICENSE (MIT)
 
-   Copyright (C) 2017-2023 Bernhard Schelling
+   Copyright (C) 2017-2025 Bernhard Schelling
    Based on SFZero, Copyright (C) 2012 Steve Folta (https://github.com/stevefolta/SFZero)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy of this
@@ -185,6 +185,7 @@ TSFDEF void tsf_render_float(tsf* f, float* buffer, int samples, int flag_mixing
 //   pitch_wheel: pitch wheel position 0 to 16383 (default 8192 unpitched)
 //   pitch_range: range of the pitch wheel in semitones (default 2.0, total +/- 2 semitones)
 //   tuning: tuning of all playing voices in semitones (default 0.0, standard (A440) tuning)
+//   flag_sustain: 0 to end notes that were held sustained and disable holding sustain otherwise enable it
 //   (tsf_set_preset_number and set_bank_preset return 0 if preset does not exist, otherwise 1)
 //   (tsf_channel_set_... return 0 if a new channel needed allocation and that failed, otherwise 1)
 TSFDEF int tsf_channel_set_presetindex(tsf* f, int channel, int preset_index);
@@ -196,6 +197,7 @@ TSFDEF int tsf_channel_set_volume(tsf* f, int channel, float volume);
 TSFDEF int tsf_channel_set_pitchwheel(tsf* f, int channel, int pitch_wheel);
 TSFDEF int tsf_channel_set_pitchrange(tsf* f, int channel, float pitch_range);
 TSFDEF int tsf_channel_set_tuning(tsf* f, int channel, float tuning);
+TSFDEF int tsf_channel_set_sustain(tsf* f, int channel, int flag_sustain);
 
 // Start or stop playing notes on a channel (needs channel preset to be set)
 //   channel: channel number

@@ -51,6 +51,12 @@ A `SoundFont` holds its samples in native memory until `close()` is called, so c
 
 Decoding uses [stb_vorbis](https://github.com/nothings/stb), which is not hardened against malformed data, so only load `.sf3` files you trust.
 
+## Testing
+
+The tests in `soundfont/src/commonTest` load an `.sf2` and an `.sf3` font and render audio through the native library:
+* `./gradlew :soundfont:linuxX64Test` or `:soundfont:macosArm64Test` runs them on the host (CI runs the Linux ones on every pull request);
+* `./gradlew :soundfont:connectedAndroidDeviceTest` runs them on a connected Android device or emulator.
+
 ## License
 
 This project is licensed under the Apache 2.0 License - see the [LICENSE.md](LICENSE.md) file for details
